@@ -168,6 +168,9 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
 .mi-empty{justify-self:start;margin-top:2px;padding:4px 10px;font-size:13px;color:var(--muted);background:var(--soft);border:none;border-radius:2px;cursor:pointer}
 .mi-edit{justify-self:start;padding:0;font-size:12.5px;color:var(--muted);background:none;border:none;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
 .mine-consent{margin-top:18px}
+.send{margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
+.send-note{margin:0;font-size:13.5px}
+.send .actions{margin-top:12px}
 .copy-msg{font-size:13.5px;color:var(--muted)}
 #copy-fallback{width:100%;min-height:200px;margin-top:12px;padding:10px 12px;font:inherit;font-size:14px;color:var(--fg);background:var(--soft);border:1px solid var(--line);border-radius:2px}
 .note{margin:14px 0 0;font-size:13px;color:var(--muted)}
@@ -243,16 +246,23 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     </div>
     <div class="field">
       <label for="name">이름 (선택)</label>
-      <input id="name" type="text" placeholder="복사할 때 맨 위에 들어가요" autocomplete="name">
+      <input id="name" type="text" placeholder="보내거나 복사할 때 함께 들어가요" autocomplete="name">
     </div>
     <ol class="mine-list" id="mine-list"></ol>
     <label class="consent mine-consent"><input type="checkbox" id="consent-mine" class="consent-box"> 내가 적은 답을 이름 없이, 누구인지 알 수 없도록 다른 답과 섞어 다듬은 뒤 재단 블로그나 결과보고에 써도 괜찮아요.</label>
+    <div class="send">
+      <p class="send-note">‘재단에 보내기’를 누르면 내 답과 위에 적은 이름이 우양재단으로 전송돼요. 고친 뒤 다시 보내면 가장 최근에 보낸 답으로 봐요.</p>
+      <div class="actions">
+        <button type="button" class="btn primary" id="send-btn">재단에 보내기</button>
+        <span class="copy-msg" id="send-msg" role="status"></span>
+      </div>
+    </div>
     <div class="actions">
-      <button type="button" class="btn primary" id="copy-btn">전체 복사하기</button>
+      <button type="button" class="btn" id="copy-btn">전체 복사하기</button>
       <span class="copy-msg" id="copy-msg" role="status"></span>
     </div>
     <textarea id="copy-fallback" readonly hidden aria-label="복사할 내 답"></textarea>
-    <p class="note">답은 이 휴대폰의 이 브라우저에만 저장돼요. 다른 앱이나 다른 휴대폰으로 열면 보이지 않으니, 카톡 '나와의 채팅'에 복사해 두면 안전해요.</p>
+    <p class="note">답은 이 휴대폰의 이 브라우저에 저장돼요. 다른 앱이나 다른 휴대폰으로 열면 보이지 않으니, 재단에 보내거나 카톡 '나와의 채팅'에 복사해 두면 안전해요.</p>
   </section>
 </main>
 
@@ -307,6 +317,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
   var TINTS = ['--t1','--t2','--t3','--t4'];
   var FILTERS = [['all','전체'],['end','마무리']];
   var KEY = 'suhdoho-cards-v2';
+  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbwVM_OK59Y4oLPKP5Fdv6abKNPd8eLHDcG-CxZScpi-RJhwzkVfwuwx0uziZW2-dpXT/exec';
 
   function $(s, r){ return (r || document).querySelector(s); }
   function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
@@ -330,8 +341,11 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     filter: saved.filter === 'end' ? 'end' : 'all',
     drawn: Array.isArray(saved.drawn) ? saved.drawn : [],
     shown: saved.shown || null,
-    current: saved.current || 'c1'
+    current: saved.current || 'c1',
+    device: saved.device || newDevice(),
+    sentSig: saved.sentSig || null
   };
+  function newDevice(){ return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10); }
   function has(id){ return !!(state.answers[id] && state.answers[id].trim()); }
   function answeredCount(){ return CARDS.filter(function(c){ return has(c.id); }).length; }
 
@@ -516,6 +530,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
       ol.appendChild(li);
     });
     $$('.consent-box', $('#view-mine')).forEach(function(x){ x.checked = state.consent; });
+    updateSendMsg();
   }
   $('#mine-list').addEventListener('click', function(e){
     var b = e.target.closest('[data-go]'); if (!b) return;
@@ -538,6 +553,41 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fail);
       else fail();
     } catch(e){ fail(); }
+  });
+
+  function payload(){
+    var answers = {};
+    CARDS.forEach(function(c){ answers[c.id] = has(c.id) ? state.answers[c.id].trim() : ''; });
+    return {device: state.device, name: state.name.trim(), consent: state.consent, answers: answers};
+  }
+  function sigOf(p){ return JSON.stringify([p.name, p.consent, p.answers]); }
+  var sending = false;
+  function updateSendMsg(){
+    if (sending) return;
+    var msg = $('#send-msg');
+    if (!state.sentSig) msg.textContent = '';
+    else if (state.sentSig === sigOf(payload())) msg.textContent = '보냈어요.';
+    else msg.textContent = '보낸 뒤 고친 내용이 있어요. 다시 보내 주세요.';
+  }
+  $('#send-btn').addEventListener('click', function(){
+    var btn = this, msg = $('#send-msg');
+    if (sending) return;
+    if (!answeredCount()) { msg.textContent = '아직 적은 답이 없어요.'; return; }
+    var p = payload(), finished = false;
+    function end(ok){
+      if (finished) return;
+      finished = true; sending = false;
+      btn.disabled = false; btn.textContent = '재단에 보내기';
+      if (ok) { state.sentSig = sigOf(p); save(); msg.textContent = '보냈어요. 고친 뒤 다시 보내도 괜찮아요.'; }
+      else msg.textContent = '보내지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요. 계속 안 되면 아래 ‘전체 복사하기’로 복사해 우양재단 카카오톡 채널에 보내 주세요.';
+    }
+    if (!window.fetch) { end(false); return; }
+    sending = true; btn.disabled = true; btn.textContent = '보내는 중…'; msg.textContent = '';
+    flush();
+    setTimeout(function(){ end(false); }, 20000);
+    fetch(ENDPOINT, {method: 'POST', body: JSON.stringify(p)})
+      .then(function(r){ return r.json(); })
+      .then(function(d){ end(!!(d && d.ok)); }, function(){ end(false); });
   });
 
   /* ---------- shared ---------- */
@@ -568,14 +618,14 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
       $$('[data-hint="' + id + '"]').forEach(function(h){ h.hidden = has(id); });
       scheduleSave(id); updateCounts();
     } else if (t.id === 'name') {
-      state.name = t.value; scheduleSave();
+      state.name = t.value; scheduleSave(); updateSendMsg();
     }
   });
   document.addEventListener('change', function(e){
     if (e.target.classList && e.target.classList.contains('consent-box')) {
       state.consent = e.target.checked;
       $$('.consent-box').forEach(function(b){ b.checked = state.consent; });
-      save();
+      save(); updateSendMsg();
     }
   });
 
