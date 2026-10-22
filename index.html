@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="우양재단 장학생 문화관람 · 서도호전을 보며 적고 함께 나누는 감상카드">
+<meta property="og:title" content="서도호전 감상카드">
+<meta property="og:description" content="작품 앞에서 눈길이 머문 장면과 떠오른 생각을 카드에 담아 보세요.">
+<meta property="og:type" content="website">
+<style>body{margin:0}</style>
+<title>서도호전 감상카드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
+<style>
+/* Layout: exhibition-leaflet grid — white ground, black type, hairline rules, one narrow column (max 560px); color appears only as small translucent swatches. Intro screen first, then cards / draw / my answers behind a bottom tab bar. */
+:root{
+  --bg:#FFFFFF; --card:#FFFFFF; --soft:#F3F4F5; --fg:#121314; --muted:#6A6F76; --line:#E1E3E6; --strong:#121314;
+  --t1:#3E6FE0; --t2:#E2508A; --t3:#2EAD98; --t4:#E9B322; --t-end:#8E949B;
+  --blend:multiply;
+  --font:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --bar-h:64px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E0F11; --card:#16171A; --soft:#1F2125; --fg:#F1F2F3; --muted:#9BA1A8; --line:#2B2E33; --strong:#F1F2F3;
+    --t1:#6F95F0; --t2:#F07AA9; --t3:#4FC9B3; --t4:#F0C649; --t-end:#A9AFB6;
+    --blend:screen; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E0F11; --card:#16171A; --soft:#1F2125; --fg:#F1F2F3; --muted:#9BA1A8; --line:#2B2E33; --strong:#F1F2F3;
+  --t1:#6F95F0; --t2:#F07AA9; --t3:#4FC9B3; --t4:#F0C649; --t-end:#A9AFB6;
+  --blend:screen; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.6;letter-spacing:-.01em;word-break:keep-all;overflow-wrap:anywhere}
+button{font:inherit;letter-spacing:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--strong);outline-offset:2px}
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:12px calc(var(--bar-h) + 32px + env(safe-area-inset-bottom, 0px))}
+.sw{display:inline-block;flex:0 0 auto;width:12px;height:12px;background:var(--tint);opacity:.9;mix-blend-mode:var(--blend)}
+.banner{margin:0 0 16px;padding:10px 12px;background:var(--soft);font-size:13.5px}
+[hidden]{display:none!important}
+
+/* ---------- intro ---------- */
+.layers{position:relative;width:84px;height:54px;margin-left:auto;transform:scale(.75);transform-origin:top right}
+.layers i{position:absolute;display:block;background:var(--tint);opacity:.72;mix-blend-mode:var(--blend)}
+.layers i:nth-child(1){--tint:var(--t1);left:0;top:18px;width:40px;height:52px}
+.layers i:nth-child(2){--tint:var(--t2);left:22px;top:0;width:34px;height:40px}
+.layers i:nth-child(3){--tint:var(--t4);left:34px;top:34px;width:44px;height:30px}
+.layers i:nth-child(4){--tint:var(--t3);left:58px;top:12px;width:22px;height:46px}
+.title{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:8px 0 0;line-height:1}
+.t1{font-size:56px;font-weight:900;letter-spacing:-.05em}
+.t2{font-size:20px;font-weight:700;letter-spacing:-.03em}
+.intro-body{margin-top:16px;padding-top:14px;border-top:1.5px solid var(--strong)}
+.intro-h{margin:0 0 10px;font-size:20px;font-weight:700;letter-spacing:-.035em;line-height:1.4}
+.intro-body p{margin:0 0 10px;font-size:15.5px;line-height:1.65;letter-spacing:-.04em;text-align:justify;word-break:normal}
+.intro-body p:last-child{margin-bottom:0}
+#view-intro{padding-inline:12px}
+.dock.cta{padding-left:max(28px, env(safe-area-inset-left, 0px));padding-right:max(28px, env(safe-area-inset-right, 0px))}
+
+/* ---------- inner screens ---------- */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:1.5px solid var(--strong)}
+.home{display:inline-flex;align-items:center;gap:6px;padding:4px 0;background:none;border:none;font-size:13.5px;font-weight:500;cursor:pointer}
+.bar-title{font-size:13.5px;font-weight:700}
+.bar-count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.view-head{margin:20px 0 0}
+.view-title{margin:0;font-size:26px;font-weight:700;letter-spacing:-.035em;line-height:1.3}
+.view-sub{margin:6px 0 0;color:var(--muted)}
+.chips{display:flex}
+.chip{display:inline-flex;align-items:center;min-height:30px;padding:3px 14px;font-size:13.5px;font-weight:500;background:var(--bg);border:1px solid var(--line);border-radius:0;cursor:pointer}
+.chip + .chip{margin-left:-1px}
+.chip[aria-checked="true"]{position:relative;background:var(--strong);color:var(--bg);border-color:var(--strong)}
+
+/* one-screen card mode */
+body.cards-mode .wrap{padding-block:10px 0}
+body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh - var(--bar-h) - env(safe-area-inset-bottom, 0px) - 10px);height:calc(100dvh - var(--bar-h) - env(safe-area-inset-bottom, 0px) - 10px)}
+#view-cards .bar{flex:0 0 auto;padding-bottom:10px}
+#view-cards .carousel{flex:1 1 auto;min-height:0;margin-top:12px;align-items:stretch}
+#view-cards .carousel>.card{overflow-y:auto;overscroll-behavior:contain}
+#view-cards .card .ans{flex:1 0 96px;min-height:96px;resize:none}
+#view-cards .car-nav{flex:0 0 auto;margin:10px 0}
+#view-cards .carousel.single{margin-bottom:12px}
+
+/* ---------- card ---------- */
+.card{--tint:var(--t1);min-width:0;display:flex;flex-direction:column;gap:10px;padding:16px 16px 14px;background:var(--card);border:1px solid var(--line)}
+.c-head{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:500}
+.c-titlerow{display:flex;align-items:baseline;gap:9px;margin-top:2px}
+.c-num{font-size:32px;font-weight:900;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.c-title{margin:0;font-size:15.5px;font-weight:700;letter-spacing:-.02em}
+.c-work{padding-top:9px;border-top:1px solid var(--line);font-size:13.5px;line-height:1.65;color:var(--muted)}
+.c-work p{margin:0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.c-work.open p{display:block;overflow:visible}
+.more{margin-top:3px;padding:2px 0;font-size:12.5px;font-weight:500;color:var(--fg);background:none;border:none;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.c-q{margin:0;font-size:18px;font-weight:700;line-height:1.5;letter-spacing:-.03em;text-wrap:pretty}
+.c-q.mixed{font-size:16.5px;font-weight:400;line-height:1.65;letter-spacing:-.02em}
+.c-q.mixed b{font-weight:700}
+.c-sub{margin:0;font-size:14px;line-height:1.6}
+.ans-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:2px}
+.ans-status{font-size:12px;color:var(--muted)}
+.ans-label{font-size:12px;font-weight:500;color:var(--muted)}
+.ans{width:100%;min-height:108px;resize:vertical;padding:11px 12px;font:inherit;font-size:16px;line-height:1.6;letter-spacing:-.01em;color:var(--fg);background:var(--soft);border:1px solid transparent;border-radius:2px}
+.ans:focus{outline:none;border-color:var(--strong);background:var(--card)}
+.ans::placeholder{color:var(--muted);opacity:.85}
+.consent{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;cursor:pointer}
+.consent input{flex:0 0 auto;width:18px;height:18px;margin:3px 0 0;accent-color:var(--strong)}
+.c-foot{min-height:18px;display:flex;justify-content:flex-end;font-size:12px;color:var(--muted)}
+.hint{margin:10px 0 0;font-size:13.5px;color:var(--muted)}
+
+/* carousel */
+.carousel{display:flex;gap:10px;align-items:flex-start;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;scrollbar-width:none}
+.carousel::-webkit-scrollbar{display:none}
+.carousel>.card{flex:0 0 88%;scroll-snap-align:start}
+.carousel.single>.card{flex-basis:100%}
+.car-nav{display:flex;align-items:center;gap:8px;margin-top:14px}
+.arrow{flex:0 0 auto;width:32px;height:32px;font-size:17px;line-height:1;background:var(--bg);border:1px solid var(--line);border-radius:2px;cursor:pointer}
+.arrow:disabled{opacity:.3;cursor:default}
+.dots{flex:1;min-width:0;display:flex;flex-wrap:wrap;justify-content:center;gap:3px}
+.dot{position:relative;width:24px;height:24px;padding:0;font-size:11.5px;font-weight:500;font-variant-numeric:tabular-nums;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:2px;cursor:pointer;overflow:hidden}
+.dot.done{color:var(--fg)}
+.dot.done::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--tint)}
+.dot.on{border-color:var(--strong);color:var(--fg);font-weight:700}
+
+/* draw */
+.stage{margin-top:16px}
+.stack{position:relative;height:230px;display:grid;place-items:center}
+.stack-in{position:relative;width:180px;height:150px}
+.stack-in i{position:absolute;display:block;background:var(--tint);opacity:.7;mix-blend-mode:var(--blend)}
+.stack-in i:nth-child(1){--tint:var(--t1);left:8px;top:22px;width:92px;height:112px;transform:rotate(-4deg)}
+.stack-in i:nth-child(2){--tint:var(--t2);left:56px;top:4px;width:80px;height:96px;transform:rotate(3deg)}
+.stack-in i:nth-child(3){--tint:var(--t3);left:96px;top:40px;width:74px;height:100px;transform:rotate(-2deg)}
+.stack-in i:nth-child(4){--tint:var(--t4);left:40px;top:78px;width:96px;height:62px;transform:rotate(1deg)}
+.stack p{margin:14px 0 0;font-size:14px;font-weight:500;color:var(--muted);text-align:center}
+.shuffling .stack-in i:nth-child(1){animation:s1 .65s ease-in-out}
+.shuffling .stack-in i:nth-child(2){animation:s2 .65s ease-in-out}
+.shuffling .stack-in i:nth-child(3){animation:s3 .65s ease-in-out}
+.shuffling .stack-in i:nth-child(4){animation:s4 .65s ease-in-out}
+@keyframes s1{0%,100%{transform:rotate(-4deg)}40%{transform:translate(-56px,6px) rotate(-12deg)}75%{transform:translate(24px,0) rotate(4deg)}}
+@keyframes s2{0%,100%{transform:rotate(3deg)}40%{transform:translate(52px,-4px) rotate(11deg)}75%{transform:translate(-22px,2px) rotate(-5deg)}}
+@keyframes s3{0%,100%{transform:rotate(-2deg)}50%{transform:translate(-40px,-8px) rotate(-9deg)}}
+@keyframes s4{0%,100%{transform:rotate(1deg)}50%{transform:translate(36px,10px) rotate(8deg)}}
+.reveal{animation:rise .4s cubic-bezier(.2,.7,.2,1)}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:16px}
+.btn{min-height:48px;padding:12px 22px;font-size:15px;font-weight:700;background:var(--bg);border:1.5px solid var(--strong);border-radius:2px;cursor:pointer}
+.btn.primary{background:var(--strong);color:var(--bg)}
+.btn:disabled{opacity:.45;cursor:default}
+.remain{font-size:13.5px;color:var(--muted)}
+.history{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:18px;font-size:13px;color:var(--muted)}
+.hchip{position:relative;width:32px;height:32px;padding:0;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:2px;cursor:pointer;overflow:hidden}
+.hchip::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--tint)}
+.hchip[aria-current="true"]{border-color:var(--strong)}
+
+/* mine */
+.field{display:grid;gap:4px;margin-top:18px}
+.field label{font-size:12px;font-weight:500;color:var(--muted)}
+.field input{padding:11px 12px;font:inherit;font-size:16px;color:var(--fg);background:var(--soft);border:1px solid transparent;border-radius:2px}
+.field input:focus{outline:none;border-color:var(--strong);background:var(--card)}
+.mine-list{list-style:none;margin:20px 0 0;padding:0;border-top:1.5px solid var(--strong)}
+.mine-item{--tint:var(--t1);display:grid;gap:5px;padding:14px 0;border-bottom:1px solid var(--line);min-width:0}
+.mi-head{display:flex;align-items:center;gap:8px}
+.mi-num{min-width:1.3em;font-weight:900;font-size:17px;font-variant-numeric:tabular-nums}
+.mi-title{flex:1;min-width:0;font-weight:700}
+.mi-grp{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)}
+.mi-q{margin:0;font-size:13px;color:var(--muted)}
+.mi-a{margin:2px 0 0;white-space:pre-wrap;font-size:15px}
+.mi-empty{justify-self:start;margin-top:2px;padding:4px 10px;font-size:13px;color:var(--muted);background:var(--soft);border:none;border-radius:2px;cursor:pointer}
+.mi-edit{justify-self:start;padding:0;font-size:12.5px;color:var(--muted);background:none;border:none;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.mine-consent{margin-top:18px}
+.copy-msg{font-size:13.5px;color:var(--muted)}
+#copy-fallback{width:100%;min-height:200px;margin-top:12px;padding:10px 12px;font:inherit;font-size:14px;color:var(--fg);background:var(--soft);border:1px solid var(--line);border-radius:2px}
+.note{margin:14px 0 0;font-size:13px;color:var(--muted)}
+
+/* ---------- bottom bars ---------- */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--bg);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom, 0px);padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.dock-in{max-width:560px;margin:0 auto}
+.cta .dock-in{padding-block:10px}
+.cta .btn{width:100%}
+.tabs .dock-in{height:var(--bar-h);display:grid;grid-template-columns:repeat(3,1fr)}
+.tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:14.5px;font-weight:500;color:var(--muted);background:none;border:none;cursor:pointer}
+.tab[aria-selected="true"]{color:var(--fg);font-weight:700}
+.tab[aria-selected="true"]::before{content:"";position:absolute;top:-1px;left:28%;right:28%;height:2px;background:var(--strong)}
+.badge{font-size:11px;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums}
+
+@media (prefers-reduced-motion: reduce){
+  .shuffling .stack-in i,.reveal{animation:none!important}
+}
+</style>
+
+</head>
+<body>
+<main class="wrap">
+  <p class="banner" id="storage-banner" hidden>이 브라우저에서는 답이 저장되지 않아요. 창을 닫기 전에 '내 답'에서 복사해 두세요.</p>
+
+  <!-- intro -->
+  <section id="view-intro" class="view" aria-label="소개">
+    <div class="layers" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <h1 class="title"><span class="t1">서도호전</span><span class="t2">감상카드</span></h1>
+    <div class="intro-body">
+      <h2 class="intro-h">공간의 기억, 각자의 시선</h2>
+      <p>서도호는 집과 이동, 개인과 공동체의 관계를 통해 공간에 깃든 기억과 정체성을 탐색합니다. 그의 작품을 따라 걷는 일은 우리가 머물렀던 장소와 맺어 온 관계를 새롭게 돌아보는 시간이기도 합니다.</p>
+      <p>작품 앞에서 눈길이 머문 장면과 떠오른 생각을 이 카드에 담아 보세요. 작품에서 읽은 의미가 나의 기억이나 경험과 어떻게 이어지는지, 짧은 단어나 문장으로 남겨도 좋습니다.</p>
+      <p>관람 후에는 카페에서 각자의 기록을 펼쳐 서로의 시선을 나눕니다. 같은 작품에서 출발한 서로 다른 이야기를 통해, 오늘의 감상이 조금 더 넓어지기를 바랍니다.</p>
+    </div>
+  </section>
+
+  <!-- cards -->
+  <section id="view-cards" class="view" aria-labelledby="tab-cards" hidden>
+    <div class="bar"><button type="button" class="home" data-home>← 처음</button><div class="chips" id="filter-chips" role="radiogroup" aria-label="질문 보기"></div><span class="bar-count" data-count>0 / 9</span></div>
+    <div class="carousel" id="carousel" aria-label="질문 카드"></div>
+    <div class="car-nav">
+      <button type="button" class="arrow" id="prev" aria-label="이전 카드">‹</button>
+      <div class="dots" id="dots"></div>
+      <button type="button" class="arrow" id="next" aria-label="다음 카드">›</button>
+    </div>
+  </section>
+
+  <!-- draw -->
+  <section id="view-draw" class="view" aria-labelledby="tab-draw" hidden>
+    <div class="bar"><button type="button" class="home" data-home>← 처음</button><span class="bar-title">카드 뽑기</span><span class="bar-count" data-count>0 / 9</span></div>
+    <div class="view-head">
+      <h2 class="view-title">카드 뽑기</h2>
+      <p class="view-sub">카드를 뽑아 그 질문으로 이야기해요. 적어 둔 내 답이 함께 보여요. 9번 마무리 카드는 마지막에 다 함께 나눠요.</p>
+    </div>
+    <div class="stage" id="stage">
+      <div class="stack" id="stack" aria-hidden="true"><div><div class="stack-in"><i></i><i></i><i></i><i></i></div><p>카드를 뽑아 보세요</p></div></div>
+      <div id="drawn" aria-live="polite"></div>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn primary" id="draw-btn">카드 뽑기</button>
+      <span class="remain" id="remain"></span>
+    </div>
+    <div class="history" id="history"></div>
+  </section>
+
+  <!-- mine -->
+  <section id="view-mine" class="view" aria-labelledby="tab-mine" hidden>
+    <div class="bar"><button type="button" class="home" data-home>← 처음</button><span class="bar-title">내 답</span><span class="bar-count" data-count>0 / 9</span></div>
+    <div class="view-head">
+      <h2 class="view-title">내 답 모아보기</h2>
+      <p class="view-sub" id="mine-count"></p>
+    </div>
+    <div class="field">
+      <label for="name">이름 (선택)</label>
+      <input id="name" type="text" placeholder="복사할 때 맨 위에 들어가요" autocomplete="name">
+    </div>
+    <ol class="mine-list" id="mine-list"></ol>
+    <label class="consent mine-consent"><input type="checkbox" id="consent-mine" class="consent-box"> 내가 적은 답을 이름 없이, 누구인지 알 수 없도록 다른 답과 섞어 다듬은 뒤 재단 블로그나 결과보고에 써도 괜찮아요.</label>
+    <div class="actions">
+      <button type="button" class="btn primary" id="copy-btn">전체 복사하기</button>
+      <span class="copy-msg" id="copy-msg" role="status"></span>
+    </div>
+    <textarea id="copy-fallback" readonly hidden aria-label="복사할 내 답"></textarea>
+    <p class="note">답은 이 휴대폰의 이 브라우저에만 저장돼요. 다른 앱이나 다른 휴대폰으로 열면 보이지 않으니, 카톡 '나와의 채팅'에 복사해 두면 안전해요.</p>
+  </section>
+</main>
+
+<div class="dock cta" id="cta">
+  <div class="dock-in"><button type="button" class="btn primary" id="start-btn">카드 시작하기</button></div>
+</div>
+<nav class="dock tabs" id="tabs" aria-label="화면" hidden>
+  <div class="dock-in" role="tablist">
+    <button type="button" class="tab" role="tab" id="tab-cards" data-view="cards" aria-controls="view-cards" aria-selected="false">질문 카드</button>
+    <button type="button" class="tab" role="tab" id="tab-draw" data-view="draw" aria-controls="view-draw" aria-selected="false">카드 뽑기</button>
+    <button type="button" class="tab" role="tab" id="tab-mine" data-view="mine" aria-controls="view-mine" aria-selected="false">내 답<span class="badge" id="badge">0 / 9</span></button>
+  </div>
+</nav>
+
+<script>
+(function(){
+  var CARDS = [
+    {id:'c1', n:1, title:'오늘의 한 장면',
+     q:['오늘 전시에서 오래 바라본 작품이나 장면은 무엇인가요? 무엇이 시선을 붙잡았는지 적어 보세요.'],
+     sub:['사진을 찍었다면, 그중 한 장을 골라 함께 나누어도 좋습니다.']},
+    {id:'c2', n:2, title:'나의 씨앗',
+     work:'〈시드 뱅크〉는 작가의 어린 시절 그림과 학창 시절 작업, 기록을 모은 공간입니다. 이후의 작품으로 이어지는 관심과 실험을 살펴볼 수 있습니다.',
+     q:['어린 시절, 시간 가는 줄 모르고 몰두했던 일은 무엇인가요? 그때의 관심이 지금의 나와 이어지는 부분이 있나요?']},
+    {id:'c3', n:3, title:'오래 기억하고 싶은 장소',
+     work:'〈러빙/러빙〉이라는 제목은 ‘문지르다(rubbing)’와 ‘사랑하다(loving)’의 비슷한 발음에서 비롯되었습니다. 작가에게 공간의 표면을 문지르는 일은 그곳을 사랑하는 행위이기도 합니다. 작별을 앞둔 공간에 종이를 밀착시키고 문질러, 그곳에서 보낸 시간의 흔적을 남기는 거죠.',
+     q:['떠나왔거나 언젠가 떠나게 될 장소 중, 오래 기억하고 싶은 곳이 있나요? 〈러빙/러빙〉처럼 그곳의 흔적을 남긴다면, 어느 부분을 기록하고 싶나요?']},
+    {id:'c4', n:4, title:'나만의 완벽한 집',
+     work:'〈완벽한 집〉은 작가가 현재 거주하는 런던의 집을 반투명한 천으로 재현하고, 그 안에 여러 도시에서 살았던 집의 요소들을 겹쳐 놓은 작품입니다. 서로 다른 시간과 장소의 기억들이 하나로 포개어진 이곳을 “완벽한 집”이라고 이름 붙인 이유는 무엇일까요? 지나온 장소의 기억을 품고 새로운 삶을 이어 갈 때마다, 집도 함께 새로워집니다.',
+     q:['내가 지냈거나 자주 찾는 장소에서 세 가지를 가져와 나만의 집을 만든다면, 무엇을 고르고 싶나요?'],
+     sub:['물건이나 공간의 일부, 그곳의 분위기나 생활방식도 좋습니다. 각각을 고른 이유를 함께 적어 보세요.']},
+    {id:'c5', n:5, title:'다리를 놓는다면',
+     work:'〈다리 프로젝트〉는 작가가 살아온 서울과 뉴욕을 하나의 다리로 잇고, 그 중심에 집을 세우는 상상에서 출발한 작업입니다. 물리적 거리와 정서적 간극을 메우려는 이 구상은 건축가, 기상학자 등 여러 분야의 전문가들과의 협업을 통해 구체화됩니다. 상상이 현실을 향해 나아가는 흥미로운 여정, 어떻게 보셨나요?',
+     q:['다리를 놓아 이어 보고 싶은 두 곳이 있나요? 그 사이를 자유롭게 오갈 수 있다면, 무엇이 달라질까요?'],
+     sub:['장소뿐 아니라 사람과 사람, 과거와 현재를 잇는 다리도 상상해 볼 수 있습니다.']},
+    {id:'c6', n:6, title:'우리 안의 나',
+     work:'〈Who Am We?〉는 작가의 고등학교 졸업앨범 속 얼굴들을 작게 축소해 벽지처럼 배열한 작품입니다. 멀리서는 하나의 무늬를 이루고, 가까이에서는 저마다 다른 얼굴이 드러납니다. 작은 얼굴들이 모여 거대한 벽면을 이루듯, ‘우리’라는 전체도 각자의 삶을 가진 수많은 개인으로 이루어져 있습니다.',
+     q:['‘같은 과 학생들’이나 ‘동네 사람들’처럼 한데 묶어 생각하던 사람 중, 이야기를 나눈 뒤 새롭게 보인 사람이 있나요?'],
+     sub:['그 사람의 어떤 모습이나 이야기가 기억에 남았나요?']},
+    {id:'c7', n:7, title:'나를 지탱하는 것들',
+     work:'〈바닥〉에서는 두 팔을 위로 뻗은 채 유리판을 지탱하고 있는 약 18만 개의 작은 PVC 인물을 발견할 수 있습니다. 내가 밟고 있는 바닥이 사실은 수많은 개인의 희생과 지지 위에서 유지되고 있다는 것을 깨닫는 순간, 저마다의 묵직한 감정을 느끼게 되는데요. 이 거대한 사회 속에서 과연 우리는 어떤 위치에 서 있는 걸까요?',
+     q:['바닥을 내려다봤을 때 어떤 기분이었나요?','나의 하루를 지탱해주는 사람들은 누구인가요?']},
+    {id:'c8', n:8, title:'몸에 지니는 기억',
+     work:'〈사랑의 기억〉에서 작가는 자신의 코트 안쪽에 가족의 옷에서 떼어 낸 주머니를 달고, 가족의 추억이 담긴 사물을 넣었습니다. 오래 손이 닿은 물건은 함께 보낸 시간을 간직하는 장소가 되고, 몸을 감싸는 옷은 가족의 기억을 품는 또 하나의 집이 됩니다.',
+     q:['소중한 기억이나 누군가와의 관계를 간직하고 싶어, 몸에 지니고 다니는 물건이 있나요? 그 물건에 어떤 기억을 담아 두고 있는지도 함께 적어 보세요.']},
+    {id:'c9', n:9, end:true, title:'나에게 집은',
+     mixed:true,
+     q:['전시를 보고 난 지금, <b>서도호에게 ‘집’은 어떤 의미인 것 같나요?</b> 그렇게 느끼게 한 작품이나 장면을 함께 이야기해 주세요.','<b>나에게 ‘집’은 어떤 의미인가요?</b> 집처럼 느껴지는 장소나 물건, 사람을 떠올리며 적어 보세요.'],
+     sub:['침대 한쪽 모서리나 비 오는 날 우산 아래, 마스크 안쪽처럼 작고 잠깐 생겨나는 공간도 좋습니다.'],
+     ph:'나에게 집은 …'}
+  ];
+  var TOTAL = CARDS.length;
+  var TINTS = ['--t1','--t2','--t3','--t4'];
+  var FILTERS = [['all','전체'],['end','마무리']];
+  var KEY = 'suhdoho-cards-v2';
+
+  function $(s, r){ return (r || document).querySelector(s); }
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function tintOf(c){ return 'var(' + (c.end ? '--t-end' : TINTS[(c.n - 1) % TINTS.length]) + ')'; }
+  function labelOf(c){ return c.end ? '마무리' : '관람하며'; }
+  function byId(id){ return CARDS.filter(function(c){ return c.id === id; })[0]; }
+  function plain(s){ return s.replace(/<[^>]+>/g, ''); }
+
+  var reduceMotion = false;
+  try { reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){}
+
+  var storageOK = true;
+  try { localStorage.setItem('__suh_t','1'); localStorage.removeItem('__suh_t'); } catch(e){ storageOK = false; }
+  var saved = {};
+  if (storageOK) { try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e){ saved = {}; } }
+
+  var state = {
+    answers: saved.answers || {},
+    consent: !!saved.consent,
+    name: saved.name || '',
+    filter: saved.filter === 'end' ? 'end' : 'all',
+    drawn: Array.isArray(saved.drawn) ? saved.drawn : [],
+    shown: saved.shown || null,
+    current: saved.current || 'c1'
+  };
+  function has(id){ return !!(state.answers[id] && state.answers[id].trim()); }
+  function answeredCount(){ return CARDS.filter(function(c){ return has(c.id); }).length; }
+
+  function save(){
+    if (!storageOK) return false;
+    try { localStorage.setItem(KEY, JSON.stringify(state)); return true; }
+    catch(e){ storageOK = false; $('#storage-banner').hidden = false; return false; }
+  }
+  var saveTimer = null, pending = {};
+  function scheduleSave(id){
+    if (id) { pending[id] = true; setStatus(id, '저장 중…'); }
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function(){
+      var ok = save();
+      Object.keys(pending).forEach(function(k){ setStatus(k, ok ? '저장됨' : '이 브라우저에선 저장이 안 돼요'); });
+      pending = {};
+    }, 400);
+  }
+  function flush(){
+    if (!saveTimer) return;
+    clearTimeout(saveTimer); saveTimer = null;
+    var ok = save();
+    Object.keys(pending).forEach(function(k){ setStatus(k, ok ? '저장됨' : '이 브라우저에선 저장이 안 돼요'); });
+    pending = {};
+  }
+  document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'hidden') flush(); });
+  window.addEventListener('pagehide', flush);
+  document.addEventListener('click', function(e){
+    var m = e.target.closest('.more'); if (!m) return;
+    var w = m.parentNode, open = !w.classList.contains('open');
+    w.classList.toggle('open', open);
+    m.setAttribute('aria-expanded', open ? 'true' : 'false');
+    m.textContent = open ? '접기' : '작품 설명 더 보기';
+  });
+  function setStatus(id, text){ $$('[data-status="' + id + '"]').forEach(function(el){ el.textContent = text; }); }
+
+  /* ---------- card markup ---------- */
+  function cardHTML(c, ctx){
+    var aid = 'ans-' + ctx + '-' + c.id;
+    var h = '<article class="card" data-card="' + c.id + '" style="--tint:' + tintOf(c) + '">';
+    h += '<div class="c-head"><span class="sw"></span><span>' + labelOf(c) + '</span></div>';
+    h += '<div class="c-titlerow"><span class="c-num">' + c.n + '</span><h3 class="c-title">' + c.title + '</h3></div>';
+    if (c.work) h += '<div class="c-work"><p>' + c.work + '</p><button type="button" class="more" aria-expanded="false">작품 설명 더 보기</button></div>';
+    c.q.forEach(function(line){ h += '<p class="c-q' + (c.mixed ? ' mixed' : '') + '">' + line + '</p>'; });
+    (c.sub || []).forEach(function(line){ h += '<p class="c-sub">' + line + '</p>'; });
+    h += '<div class="ans-row"><label class="ans-label" for="' + aid + '">내 생각</label><span class="ans-status" data-status="' + c.id + '"></span></div>';
+    h += '<textarea class="ans" id="' + aid + '" data-id="' + c.id + '" rows="4" placeholder="' + (c.ph || '떠오르는 대로 짧게 적어 두세요') + '"></textarea>';
+    h += '</article>';
+    return h;
+  }
+  function fillValues(root){
+    $$('.ans', root).forEach(function(t){ t.value = state.answers[t.getAttribute('data-id')] || ''; });
+    $$('.consent-box', root).forEach(function(b){ b.checked = state.consent; });
+  }
+
+  /* ---------- carousel ---------- */
+  var carousel = $('#carousel'), dots = $('#dots'), prevBtn = $('#prev'), nextBtn = $('#next');
+  function renderFilterChips(){
+    $('#filter-chips').innerHTML = FILTERS.map(function(f){
+      return '<button type="button" class="chip" role="radio" data-key="' + f[0] + '" aria-checked="' + (f[0] === state.filter) + '">' + f[1] + '</button>';
+    }).join('');
+  }
+  function visibleCards(){ return state.filter === 'end' ? CARDS.filter(function(c){ return c.end; }) : CARDS; }
+  function renderCarousel(){
+    var list = visibleCards();
+    carousel.innerHTML = list.map(function(c){ return cardHTML(c, 'cards'); }).join('');
+    carousel.classList.toggle('single', list.length === 1);
+    fillValues(carousel);
+    dots.innerHTML = list.length > 1 ? list.map(function(c, i){
+      return '<button type="button" class="dot' + (has(c.id) ? ' done' : '') + '" data-i="' + i + '" data-dot="' + c.id + '" style="--tint:' + tintOf(c) + '" aria-label="' + c.n + '번 카드">' + c.n + '</button>';
+    }).join('') : '';
+    $('.car-nav').hidden = list.length < 2;
+    restorePosition();
+  }
+  function cardEls(){ return $$('.card', carousel); }
+  function scrollToIndex(i, smooth){
+    var cs = cardEls(); if (!cs[i]) return;
+    var left = cs[i].offsetLeft - cs[0].offsetLeft;
+    try { carousel.scrollTo({left: left, behavior: (smooth && !reduceMotion) ? 'smooth' : 'auto'}); } catch(e){ carousel.scrollLeft = left; }
+    updateNav(i);
+  }
+  function restorePosition(){
+    var ids = visibleCards().map(function(c){ return c.id; });
+    var idx = Math.max(0, ids.indexOf(state.current));
+    requestAnimationFrame(function(){ scrollToIndex(idx, false); });
+  }
+  function currentIndex(){
+    var cs = cardEls(); if (!cs.length) return 0;
+    var x = carousel.scrollLeft, max = carousel.scrollWidth - carousel.clientWidth;
+    if (x >= max - 2) return cs.length - 1;
+    var best = 0, bd = Infinity;
+    cs.forEach(function(c, i){ var d = Math.abs((c.offsetLeft - cs[0].offsetLeft) - x); if (d < bd) { bd = d; best = i; } });
+    return best;
+  }
+  function updateNav(idx){
+    var cs = cardEls();
+    $$('.dot', dots).forEach(function(d, i){ d.classList.toggle('on', i === idx); d.setAttribute('aria-current', i === idx ? 'true' : 'false'); });
+    prevBtn.disabled = idx <= 0;
+    nextBtn.disabled = idx >= cs.length - 1;
+    if (state.filter === 'all' && cs[idx] && state.current !== cs[idx].getAttribute('data-card')) { state.current = cs[idx].getAttribute('data-card'); scheduleSave(); }
+  }
+  var raf = null;
+  carousel.addEventListener('scroll', function(){
+    if (raf) return;
+    raf = requestAnimationFrame(function(){ raf = null; updateNav(currentIndex()); });
+  }, {passive:true});
+  prevBtn.addEventListener('click', function(){ scrollToIndex(Math.max(0, currentIndex() - 1), true); });
+  nextBtn.addEventListener('click', function(){ scrollToIndex(Math.min(cardEls().length - 1, currentIndex() + 1), true); });
+  dots.addEventListener('click', function(e){ var d = e.target.closest('.dot'); if (d) scrollToIndex(+d.getAttribute('data-i'), true); });
+  $('#filter-chips').addEventListener('click', function(e){
+    var b = e.target.closest('.chip'); if (!b) return;
+    state.filter = b.getAttribute('data-key');
+    save(); renderFilterChips(); renderCarousel();
+  });
+
+  /* ---------- draw ---------- */
+  function deck(){ return CARDS.filter(function(c){ return !c.end; }); }
+  function used(){
+    var ids = deck().map(function(c){ return c.id; });
+    return state.drawn.filter(function(id){ return ids.indexOf(id) > -1; });
+  }
+  function renderDraw(animate){
+    var pool = deck(), u = used();
+    var card = state.shown ? byId(state.shown) : null;
+    var drawn = $('#drawn'), stack = $('#stack');
+    if (card) {
+      drawn.innerHTML = cardHTML(card, 'draw') + '<p class="hint" data-hint="' + card.id + '"' + (has(card.id) ? ' hidden' : '') + '>아직 적은 답이 없어요. 이야기하면서 적어도 좋아요.</p>';
+      fillValues(drawn);
+      stack.hidden = true;
+      if (animate && !reduceMotion) drawn.firstElementChild.classList.add('reveal');
+    } else {
+      drawn.innerHTML = '';
+      stack.hidden = false;
+    }
+    var remaining = pool.length - u.length;
+    $('#draw-btn').textContent = remaining === 0 ? '다시 섞기' : (u.length ? '다음 카드 뽑기' : '카드 뽑기');
+    $('#remain').textContent = remaining === 0 ? '카드를 다 뽑았어요' : '남은 카드 ' + remaining + '장';
+    $('#history').innerHTML = u.length ? '<span>뽑은 카드</span>' + u.map(function(id){
+      var c = byId(id);
+      return '<button type="button" class="hchip" data-show="' + id + '" style="--tint:' + tintOf(c) + '" aria-label="' + c.n + '번 다시 보기" aria-current="' + (state.shown === id) + '">' + c.n + '</button>';
+    }).join('') : '';
+  }
+  $('#history').addEventListener('click', function(e){
+    var b = e.target.closest('[data-show]'); if (!b) return;
+    state.shown = b.getAttribute('data-show'); save(); renderDraw(true);
+  });
+  $('#draw-btn').addEventListener('click', function(){
+    var pool = deck(), u = used();
+    if (u.length >= pool.length) { state.drawn = []; state.shown = null; save(); renderDraw(false); return; }
+    var rest = pool.filter(function(c){ return u.indexOf(c.id) === -1; });
+    var pick = rest[Math.floor(Math.random() * rest.length)];
+    state.drawn = u.concat(pick.id);
+    state.shown = pick.id;
+    save();
+    if (reduceMotion) { renderDraw(false); return; }
+    var btn = this, stage = $('#stage');
+    $('#drawn').innerHTML = ''; $('#stack').hidden = false;
+    stage.classList.add('shuffling'); btn.disabled = true;
+    setTimeout(function(){ stage.classList.remove('shuffling'); btn.disabled = false; renderDraw(true); }, 650);
+  });
+
+  /* ---------- mine ---------- */
+  function renderMine(){
+    $('#mine-count').textContent = TOTAL + '개 중 ' + answeredCount() + '개를 적었어요';
+    $('#name').value = state.name;
+    var ol = $('#mine-list'); ol.innerHTML = '';
+    CARDS.forEach(function(c){
+      var li = document.createElement('li');
+      li.className = 'mine-item';
+      li.style.setProperty('--tint', tintOf(c));
+      li.innerHTML = '<div class="mi-head"><span class="mi-num">' + c.n + '</span><span class="mi-title">' + c.title + '</span><span class="mi-grp"><span class="sw"></span>' + labelOf(c) + '</span></div><p class="mi-q">' + plain(c.q.join(' ')) + '</p>';
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('data-go', c.id);
+      if (has(c.id)) {
+        var p = document.createElement('p'); p.className = 'mi-a'; p.textContent = state.answers[c.id].trim(); li.appendChild(p);
+        b.className = 'mi-edit'; b.textContent = '고치기';
+      } else {
+        b.className = 'mi-empty'; b.textContent = '아직 안 적었어요 · 적으러 가기';
+      }
+      li.appendChild(b);
+      ol.appendChild(li);
+    });
+    $$('.consent-box', $('#view-mine')).forEach(function(x){ x.checked = state.consent; });
+  }
+  $('#mine-list').addEventListener('click', function(e){
+    var b = e.target.closest('[data-go]'); if (!b) return;
+    goToCard(b.getAttribute('data-go'));
+  });
+  function buildText(){
+    var lines = ['서도호전 감상카드 · 2026.10.31'];
+    if (state.name.trim()) lines.push('이름: ' + state.name.trim());
+    CARDS.forEach(function(c){
+      lines.push('', c.n + '. ' + c.title, 'Q. ' + plain(c.q.join(' ')), '→ ' + (has(c.id) ? state.answers[c.id].trim() : '(안 적음)'));
+    });
+    lines.push('', '답변 활용(이름 없이, 다른 답과 섞어 블로그·결과보고에 사용): ' + (state.consent ? '동의' : '동의 안 함'));
+    return lines.join('\n');
+  }
+  $('#copy-btn').addEventListener('click', function(){
+    var text = buildText(), msg = $('#copy-msg'), fb = $('#copy-fallback');
+    function done(){ fb.hidden = true; msg.textContent = '복사했어요. 카톡 나와의 채팅에 붙여 넣어 두세요.'; }
+    function fail(){ fb.hidden = false; fb.value = text; fb.focus(); fb.select(); msg.textContent = '자동 복사가 안 돼요. 아래 글을 길게 눌러 복사해 주세요.'; }
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fail);
+      else fail();
+    } catch(e){ fail(); }
+  });
+
+  /* ---------- shared ---------- */
+  function goToCard(id){
+    var c = byId(id);
+    state.filter = 'all'; state.current = id; save();
+    renderFilterChips(); show('cards'); renderCarousel();
+    requestAnimationFrame(function(){
+      var t = $('#ans-cards-' + c.id);
+      if (t) { try { t.focus({preventScroll:true}); } catch(err){ t.focus(); } t.scrollIntoView({block:'center'}); }
+    });
+  }
+  function updateCounts(){
+    var n = answeredCount();
+    $('#badge').textContent = n + ' / ' + TOTAL;
+    $$('[data-count]').forEach(function(el){ el.textContent = n + ' / ' + TOTAL + ' 적음'; });
+    $('#start-btn').textContent = n ? '이어서 적기' : '카드 시작하기';
+    CARDS.forEach(function(c){
+      $$('[data-dot="' + c.id + '"]').forEach(function(d){ d.classList.toggle('done', has(c.id)); });
+    });
+  }
+  document.addEventListener('input', function(e){
+    var t = e.target;
+    if (t.classList && t.classList.contains('ans')) {
+      var id = t.getAttribute('data-id');
+      state.answers[id] = t.value;
+      $$('.ans[data-id="' + id + '"]').forEach(function(o){ if (o !== t) o.value = t.value; });
+      $$('[data-hint="' + id + '"]').forEach(function(h){ h.hidden = has(id); });
+      scheduleSave(id); updateCounts();
+    } else if (t.id === 'name') {
+      state.name = t.value; scheduleSave();
+    }
+  });
+  document.addEventListener('change', function(e){
+    if (e.target.classList && e.target.classList.contains('consent-box')) {
+      state.consent = e.target.checked;
+      $$('.consent-box').forEach(function(b){ b.checked = state.consent; });
+      save();
+    }
+  });
+
+  /* ---------- screens ---------- */
+  var VIEWS = ['intro','cards','draw','mine'];
+  function show(view){
+    VIEWS.forEach(function(v){ $('#view-' + v).hidden = v !== view; });
+    ['cards','draw','mine'].forEach(function(v){ $('#tab-' + v).setAttribute('aria-selected', v === view ? 'true' : 'false'); });
+    $('#cta').hidden = view !== 'intro';
+    $('#tabs').hidden = view === 'intro';
+    document.body.classList.toggle('cards-mode', view === 'cards');
+    if (view === 'cards') { fillValues($('#view-cards')); restorePosition(); }
+    if (view === 'draw') renderDraw(false);
+    if (view === 'mine') renderMine();
+    updateCounts();
+    try { history.replaceState(null, '', view === 'intro' ? location.pathname + location.search : '#' + view); } catch(e){}
+    window.scrollTo(0, 0);
+  }
+  $$('.tab').forEach(function(t){ t.addEventListener('click', function(){ show(t.getAttribute('data-view')); }); });
+  $$('[data-home]').forEach(function(b){ b.addEventListener('click', function(){ show('intro'); }); });
+  $('#start-btn').addEventListener('click', function(){ show('cards'); });
+
+  /* ---------- start ---------- */
+  if (!storageOK) $('#storage-banner').hidden = false;
+  renderFilterChips(); renderCarousel();
+  var start = (location.hash || '').replace('#', '');
+  show(VIEWS.indexOf(start) > -1 ? start : 'intro');
+})();
+</script>
+
+</body>
+</html>
