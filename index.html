@@ -520,7 +520,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
   $('#filter-chips').addEventListener('click', function(e){
     var b = e.target.closest('.chip'); if (!b) return;
     state.filter = b.getAttribute('data-key');
-    if (steps().indexOf(state.current) < 0) state.current = steps()[0];
+    if (state.filter === 'all' || steps().indexOf(state.current) < 0) state.current = steps()[0];
     save(); renderFilterChips(); renderCarousel();
   });
 
