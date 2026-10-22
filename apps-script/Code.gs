@@ -3,14 +3,14 @@
  *
  * 구글 시트의 [확장 프로그램 → Apps Script]에 이 파일 내용을 통째로 붙여 넣어 사용합니다.
  * 감상카드 페이지는 학생이 마지막 화면에서 '보낼게요'를 고른 뒤부터 답을 자동으로 보냅니다.
- * 휴대폰 번호표가 같은 줄이 있으면 그 줄을 최신 답으로 덮어쓰고, 없으면 새 줄을 추가합니다.
+ * 구분번호가 같은 줄이 있으면 그 줄을 최신 답으로 덮어쓰고, 없으면 새 줄을 추가합니다.
  * 학생이 나중에 '보내지 않을게요'로 바꾸면 그 학생의 줄을 지웁니다.
  * 이 웹 앱은 밖으로 시트 내용을 돌려주지 않습니다.
  *
  * 페이지가 보내는 내용(JSON, text/plain):
- *   { device: "무작위 번호표", name: "이름", consent: true/false/null,
+ *   { device: "무작위 구분번호", name: "이름", consent: true/false/null,
  *     answers: { c1: "...", ..., c9: "..." } }
- *   또는 { device: "무작위 번호표", withdraw: true }
+ *   또는 { device: "무작위 구분번호", withdraw: true }
  */
 
 var SHEET_NAME = '답변';
@@ -25,7 +25,7 @@ var CARDS = [
   ['c8', '8. 몸에 지니는 기억'],
   ['c9', '9. 나에게 집은']
 ];
-var HEADER = ['받은 시각', '휴대폰 번호표', '이름', '활용 동의', '적은 개수']
+var HEADER = ['받은 시각', '구분번호', '이름', '활용 동의', '적은 개수']
   .concat(CARDS.map(function (c) { return c[1]; }));
 var MAX_ANSWER = 5000;   // 답 하나 최대 글자 수
 var MAX_NAME = 40;
@@ -94,7 +94,7 @@ function withLock_(fn) {
   return json_({ ok: true });
 }
 
-/** 휴대폰 번호표가 같은 줄의 번호(없으면 -1) */
+/** 구분번호가 같은 줄의 번호(없으면 -1) */
 function findRow_(sheet, device) {
   var last = sheet.getLastRow();
   if (last < 2) return -1;
