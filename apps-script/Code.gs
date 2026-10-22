@@ -2,13 +2,15 @@
  * 서도호전 감상카드 → 구글 시트 답변 받기
  *
  * 구글 시트의 [확장 프로그램 → Apps Script]에 이 파일 내용을 통째로 붙여 넣어 사용합니다.
- * 감상카드 페이지는 학생이 답을 적을 때마다 자동으로 보냅니다.
+ * 감상카드 페이지는 학생이 마지막 화면에서 '보낼게요'를 고른 뒤부터 답을 자동으로 보냅니다.
  * 휴대폰 번호표가 같은 줄이 있으면 그 줄을 최신 답으로 덮어쓰고, 없으면 새 줄을 추가합니다.
- * 이 웹 앱은 밖으로 시트 내용을 돌려주지 않고, 줄을 지우지도 않습니다.
+ * 학생이 나중에 '보내지 않을게요'로 바꾸면 그 학생의 줄을 지웁니다.
+ * 이 웹 앱은 밖으로 시트 내용을 돌려주지 않습니다.
  *
  * 페이지가 보내는 내용(JSON, text/plain):
  *   { device: "무작위 번호표", name: "이름", consent: true/false/null,
  *     answers: { c1: "...", ..., c9: "..." } }
+ *   또는 { device: "무작위 번호표", withdraw: true }
  */
 
 var SHEET_NAME = '답변';
@@ -48,12 +50,18 @@ function doPost(e) {
   } catch (err) {
     return json_({ ok: false, error: 'bad-json' });
   }
-  if (!data || typeof data !== 'object' || !data.answers || typeof data.answers !== 'object') {
-    return json_({ ok: false, error: 'bad-data' });
-  }
-
+  if (!data || typeof data !== 'object') return json_({ ok: false, error: 'bad-data' });
   var device = clean_(data.device, MAX_DEVICE);
   if (!device) return json_({ ok: false, error: 'no-device' });
+
+  // 학생이 '보내지 않을게요'로 바꾸면 그 학생의 줄을 지웁니다.
+  if (data.withdraw === true) {
+    return withLock_(function (sheet) {
+      var at = findRow_(sheet, device);
+      if (at > 0) sheet.deleteRow(at);
+    });
+  }
+  if (!data.answers || typeof data.answers !== 'object') return json_({ ok: false, error: 'bad-data' });
   var answers = CARDS.map(function (c) { return clean_(data.answers[c[0]], MAX_ANSWER); });
   var count = answers.filter(function (a) { return a.trim() !== ''; }).length;
 
@@ -65,26 +73,36 @@ function doPost(e) {
     count
   ].concat(answers);
 
+  return withLock_(function (sheet) {
+    var at = findRow_(sheet, device);
+    if (at > 0) sheet.getRange(at, 1, 1, row.length).setValues([row]);
+    else sheet.appendRow(row);
+  });
+}
+
+/** 동시에 들어온 요청이 섞이지 않게 잠근 뒤 시트 작업을 합니다. */
+function withLock_(fn) {
   var lock = LockService.getScriptLock();
   try {
     lock.waitLock(10000);
-    var sheet = getSheet_();
-    var last = sheet.getLastRow();
-    var at = -1;
-    if (last > 1) {
-      var ids = sheet.getRange(2, 2, last - 1, 1).getValues();
-      for (var i = ids.length - 1; i >= 0; i--) {
-        if (String(ids[i][0]) === device) { at = i + 2; break; }
-      }
-    }
-    if (at > 0) sheet.getRange(at, 1, 1, row.length).setValues([row]);
-    else sheet.appendRow(row);
+    fn(getSheet_());
   } catch (err) {
     return json_({ ok: false, error: 'busy' });
   } finally {
     lock.releaseLock();
   }
   return json_({ ok: true });
+}
+
+/** 휴대폰 번호표가 같은 줄의 번호(없으면 -1) */
+function findRow_(sheet, device) {
+  var last = sheet.getLastRow();
+  if (last < 2) return -1;
+  var ids = sheet.getRange(2, 2, last - 1, 1).getValues();
+  for (var i = ids.length - 1; i >= 0; i--) {
+    if (String(ids[i][0]) === device) return i + 2;
+  }
+  return -1;
 }
 
 function getSheet_() {

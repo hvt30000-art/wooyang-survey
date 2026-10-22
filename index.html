@@ -66,6 +66,7 @@ body.intro-mode .wrap{padding-bottom:calc(160px + env(safe-area-inset-bottom, 0p
 .name-row input:focus{outline:none;border-color:var(--strong);background:var(--card)}
 .name-row.err input{border-color:var(--t2)}
 .name-msg{margin:0 0 6px;font-size:12.5px;color:var(--muted)}
+.name-msg:empty{display:none}
 .name-row.err + .name-msg{color:var(--fg);font-weight:700}
 
 /* ---------- inner screens ---------- */
@@ -128,11 +129,14 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
 /* consent step */
 .c-text{margin:0;font-size:15px;line-height:1.65}
 .c-text.muted{font-size:13.5px;color:var(--muted)}
-.choices{display:grid;gap:8px;margin-top:4px}
-.choice{min-height:52px;padding:12px 16px;font-size:16px;font-weight:700;text-align:left;background:var(--bg);border:1.5px solid var(--line);border-radius:2px;cursor:pointer}
+.agree-block{display:grid;gap:5px;padding-top:10px;border-top:1px solid var(--line)}
+.agree-block .c-text{font-size:14px;line-height:1.6}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:3px}
+.choice{min-height:46px;padding:10px 8px;font-size:15px;font-weight:700;text-align:center;background:var(--bg);border:1.5px solid var(--line);border-radius:2px;cursor:pointer}
 .choice[aria-pressed="true"]{background:var(--strong);color:var(--bg);border-color:var(--strong)}
 .choice[aria-pressed="true"]::before{content:"✓ "}
-.c-msg{min-height:1.6em;margin:0;font-size:13.5px;font-weight:700}
+.c-msg{margin:0;font-size:13.5px;font-weight:700}
+.c-msg:empty{display:none}
 
 /* draw */
 .stage{margin-top:16px}
@@ -262,14 +266,14 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
       <span class="copy-msg" id="copy-msg" role="status"></span>
     </div>
     <textarea id="copy-fallback" readonly hidden aria-label="복사할 내 답"></textarea>
-    <p class="note">적은 답은 이 휴대폰과 우양재단에 함께 자동 저장돼요. 다른 앱이나 다른 휴대폰으로 열면 이 휴대폰에 적은 답이 보이지 않으니, 카톡 '나와의 채팅'에 복사해 두면 다시 보기 좋아요.</p>
+    <p class="note">적은 답은 이 휴대폰에 저장돼요. 다른 앱이나 다른 휴대폰으로 열면 보이지 않으니, 카톡 '나와의 채팅'에 복사해 두면 다시 보기 좋아요.</p>
   </section>
 </main>
 
 <div class="dock cta" id="cta">
   <div class="dock-in">
     <div class="name-row" id="name-row"><label for="name">이름</label><input id="name" type="text" placeholder="이름을 적어 주세요" autocomplete="name" maxlength="40" required aria-describedby="name-msg"></div>
-    <p class="name-msg" id="name-msg">적은 답은 이름과 함께 우양재단에 자동 저장돼요.</p>
+    <p class="name-msg" id="name-msg" role="status"></p>
     <button type="button" class="btn primary" id="start-btn">카드 시작하기</button>
   </div>
 </div>
@@ -341,6 +345,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
   var state = {
     answers: saved.answers || {},
     agree: saved.agree === true || saved.agree === false ? saved.agree : (saved.consent === true ? true : null),
+    sendOk: saved.sendOk === true || saved.sendOk === false ? saved.sendOk : null,
     name: saved.name || '',
     filter: saved.filter === 'end' ? 'end' : 'all',
     drawn: Array.isArray(saved.drawn) ? saved.drawn : [],
@@ -366,9 +371,13 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     CARDS.forEach(function(c){ answers[c.id] = has(c.id) ? state.answers[c.id].trim() : ''; });
     return {device: state.device, name: state.name.trim(), consent: state.agree, answers: answers};
   }
-  function sigOf(p){ return JSON.stringify([p.name, p.consent, p.answers]); }
-  function canSync(){ return !!state.name.trim() && (answeredCount() > 0 || state.agree !== null); }
-  function synced(){ return state.sentSig === sigOf(payload()); }
+  // nothing leaves the phone until the student agrees on the last screen;
+  // if they later take it back, their row is removed from the sheet
+  function withdrawing(){ return state.sendOk === false && !!state.sentSig; }
+  function body(){ return withdrawing() ? {device: state.device, withdraw: true} : payload(); }
+  function sigOf(p){ return p.withdraw ? null : JSON.stringify([p.name, p.consent, p.answers]); }
+  function canSync(){ return withdrawing() || (state.sendOk === true && !!state.name.trim()); }
+  function synced(){ return state.sentSig === sigOf(body()); }
   var syncTimer = null, syncing = false, syncAgain = false;
   function scheduleSync(){
     clearTimeout(syncTimer);
@@ -378,7 +387,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     clearTimeout(syncTimer); syncTimer = null;
     if (!canSync() || synced() || !window.fetch) { updateSyncMsg(); return; }
     if (syncing) { syncAgain = true; return; }
-    var p = payload(), sig = sigOf(p), finished = false;
+    var p = body(), sig = sigOf(p), finished = false;
     syncing = true; updateSyncMsg();
     function end(ok){
       if (finished) return;
@@ -394,11 +403,11 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
   }
   function beaconSync(){
     if (!canSync() || synced() || !navigator.sendBeacon) return;
-    try { navigator.sendBeacon(ENDPOINT, new Blob([JSON.stringify(payload())], {type: 'text/plain;charset=UTF-8'})); } catch(e){}
+    try { navigator.sendBeacon(ENDPOINT, new Blob([JSON.stringify(body())], {type: 'text/plain;charset=UTF-8'})); } catch(e){}
   }
   function updateSyncMsg(){
     var el = $('#sync-msg'); if (!el) return;
-    if (!canSync()) el.textContent = '';
+    if (state.sendOk !== true) el.textContent = '';
     else if (synced()) el.textContent = '적은 답이 우양재단에 자동 저장됐어요.';
     else if (syncing) el.textContent = '우양재단에 저장하는 중…';
     else el.textContent = '아직 우양재단에 저장되지 않은 내용이 있어요. 인터넷이 연결되면 자동으로 저장돼요.';
@@ -449,16 +458,20 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
   function fillValues(root){
     $$('.ans', root).forEach(function(t){ t.value = state.answers[t.getAttribute('data-id')] || ''; });
   }
+  function agreeBlock(key, q, text, val){
+    return '<div class="agree-block"><p class="c-q" style="font-size:16px">' + q + '</p><p class="c-text">' + text + '</p>' +
+      '<div class="choices" role="group" aria-label="' + plain(q) + '">' +
+      '<button type="button" class="choice" data-agree="' + key + ':yes" aria-pressed="' + (val === true) + '">' + (key === 'send' ? '보낼게요' : '동의해요') + '</button>' +
+      '<button type="button" class="choice" data-agree="' + key + ':no" aria-pressed="' + (val === false) + '">' + (key === 'send' ? '보내지 않을게요' : '동의하지 않아요') + '</button>' +
+      '</div></div>';
+  }
   function consentHTML(){
     var h = '<article class="card" data-card="consent" style="--tint:var(--t-end)">';
-    h += '<div class="c-head"><span class="sw"></span><span>마지막</span></div>';
-    h += '<div class="c-titlerow"><h3 class="c-title" style="font-size:20px">답변 활용에 동의하시나요?</h3></div>';
-    h += '<p class="c-text">적어 주신 답을 <b>이름 없이, 누구인지 알 수 없도록</b> 다른 답과 섞어 다듬은 뒤 재단 블로그나 결과보고에 쓰려고 해요.</p>';
-    h += '<p class="c-text muted">동의하지 않아도 불이익은 없어요. 나중에 ‘내 답 보기’에서 바꿀 수 있어요.</p>';
-    h += '<div class="choices" role="group" aria-label="답변 활용 동의">';
-    h += '<button type="button" class="choice" data-agree="yes" aria-pressed="' + (state.agree === true) + '">동의해요</button>';
-    h += '<button type="button" class="choice" data-agree="no" aria-pressed="' + (state.agree === false) + '">동의하지 않아요</button>';
-    h += '</div><p class="c-msg" id="consent-msg" role="status"></p>';
+    h += '<div class="c-titlerow"><h3 class="c-title" style="font-size:19px">적어 주셔서 고마워요</h3></div>';
+    h += agreeBlock('send', '1. 내 답을 우양재단에 보낼까요?', '적은 답이 이름과 함께 재단에 저장돼요. 보낸 뒤에 고친 답도 자동으로 저장돼요.', state.sendOk);
+    h += agreeBlock('use', '2. 답변 활용에 동의하시나요?', '재단 블로그나 결과보고에 답을 쓰게 된다면 <b>이름은 빼고</b> 써요. 누구의 답인지도 알 수 없도록 <b>여러 사람의 답을 섞어서</b> 다듬어 써요.', state.agree);
+    h += '<p class="c-text muted">어느 쪽을 골라도 불이익은 없어요. ‘내 답 보기’에서 바꿀 수 있어요.</p>';
+    h += '<p class="c-msg" id="consent-msg" role="status"></p>';
     h += '</article>';
     return h;
   }
@@ -490,14 +503,15 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
   prevBtn.addEventListener('click', function(){ goStep(stepIndex() - 1); });
   nextBtn.addEventListener('click', function(){
     if (state.current !== 'consent') { goStep(stepIndex() + 1); return; }
-    if (state.agree === null) { $('#consent-msg').textContent = '동의 여부를 골라 주세요.'; return; }
-    show('mine');
+    if (state.sendOk === null || state.agree === null) { $('#consent-msg').textContent = '두 질문에 모두 답해 주세요.'; return; }
+    syncNow(); show('mine');
   });
   carousel.addEventListener('click', function(e){
     var b = e.target.closest('[data-agree]'); if (!b) return;
-    state.agree = b.getAttribute('data-agree') === 'yes';
+    var v = b.getAttribute('data-agree').split(':');
+    if (v[0] === 'send') state.sendOk = v[1] === 'yes'; else state.agree = v[1] === 'yes';
     save();
-    $$('[data-agree]', carousel).forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+    $$('[data-agree^="' + v[0] + ':"]', carousel).forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
     $('#consent-msg').textContent = '';
   });
   $('#filter-chips').addEventListener('click', function(e){
@@ -574,7 +588,8 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
       li.appendChild(b);
       ol.appendChild(li);
     });
-    $('#mine-consent-text').textContent = '답변 활용: ' + (state.agree === true ? '동의해요' : state.agree === false ? '동의하지 않아요' : '아직 고르지 않았어요');
+    function yn(v, y, n){ return v === true ? y : v === false ? n : '아직 안 고름'; }
+    $('#mine-consent-text').textContent = '재단에 보내기: ' + yn(state.sendOk, '보낼게요', '보내지 않을게요') + ' · 답변 활용: ' + yn(state.agree, '동의해요', '동의하지 않아요');
     updateSyncMsg();
   }
   $('#view-mine').addEventListener('click', function(e){
@@ -587,7 +602,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     CARDS.forEach(function(c){
       lines.push('', c.n + '. ' + c.title, 'Q. ' + plain(c.q.join(' ')), '→ ' + (has(c.id) ? state.answers[c.id].trim() : '(안 적음)'));
     });
-    lines.push('', '답변 활용(이름 없이, 다른 답과 섞어 블로그·결과보고에 사용): ' + (state.agree === true ? '동의' : state.agree === false ? '동의 안 함' : '아직 안 고름'));
+    lines.push('', '재단에 보내기: ' + (state.sendOk === true ? '보냄' : state.sendOk === false ? '안 보냄' : '아직 안 고름'), '답변 활용(이름은 빼고, 여러 답과 섞어 블로그·결과보고에 사용): ' + (state.agree === true ? '동의' : state.agree === false ? '동의 안 함' : '아직 안 고름'));
     return lines.join('\n');
   }
   $('#copy-btn').addEventListener('click', function(){
@@ -630,7 +645,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
   });
   function setNameError(on){
     $('#name-row').classList.toggle('err', on);
-    $('#name-msg').textContent = on ? '이름을 먼저 적어 주세요.' : '적은 답은 이름과 함께 우양재단에 자동 저장돼요.';
+    $('#name-msg').textContent = on ? '이름을 적어 주세요.' : '';
   }
 
   /* ---------- screens ---------- */
