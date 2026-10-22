@@ -2,11 +2,12 @@
  * 서도호전 감상카드 → 구글 시트 답변 받기
  *
  * 구글 시트의 [확장 프로그램 → Apps Script]에 이 파일 내용을 통째로 붙여 넣어 사용합니다.
- * 감상카드 페이지가 학생 답을 보내면 '답변' 시트에 한 줄씩 추가합니다.
- * 이 웹 앱은 줄을 추가하기만 하고, 시트 내용을 읽거나 지우지 않습니다.
+ * 감상카드 페이지는 학생이 답을 적을 때마다 자동으로 보냅니다.
+ * 휴대폰 번호표가 같은 줄이 있으면 그 줄을 최신 답으로 덮어쓰고, 없으면 새 줄을 추가합니다.
+ * 이 웹 앱은 밖으로 시트 내용을 돌려주지 않고, 줄을 지우지도 않습니다.
  *
  * 페이지가 보내는 내용(JSON, text/plain):
- *   { device: "무작위 번호표", name: "이름(선택)", consent: true/false,
+ *   { device: "무작위 번호표", name: "이름", consent: true/false/null,
  *     answers: { c1: "...", ..., c9: "..." } }
  */
 
@@ -51,22 +52,33 @@ function doPost(e) {
     return json_({ ok: false, error: 'bad-data' });
   }
 
+  var device = clean_(data.device, MAX_DEVICE);
+  if (!device) return json_({ ok: false, error: 'no-device' });
   var answers = CARDS.map(function (c) { return clean_(data.answers[c[0]], MAX_ANSWER); });
   var count = answers.filter(function (a) { return a.trim() !== ''; }).length;
-  if (count === 0) return json_({ ok: false, error: 'empty' });
 
   var row = [
     new Date(),
-    clean_(data.device, MAX_DEVICE),
+    device,
     clean_(data.name, MAX_NAME),
-    data.consent === true ? '동의' : '동의 안 함',
+    data.consent === true ? '동의' : (data.consent === false ? '동의 안 함' : '아직 안 고름'),
     count
   ].concat(answers);
 
   var lock = LockService.getScriptLock();
   try {
     lock.waitLock(10000);
-    getSheet_().appendRow(row);
+    var sheet = getSheet_();
+    var last = sheet.getLastRow();
+    var at = -1;
+    if (last > 1) {
+      var ids = sheet.getRange(2, 2, last - 1, 1).getValues();
+      for (var i = ids.length - 1; i >= 0; i--) {
+        if (String(ids[i][0]) === device) { at = i + 2; break; }
+      }
+    }
+    if (at > 0) sheet.getRange(at, 1, 1, row.length).setValues([row]);
+    else sheet.appendRow(row);
   } catch (err) {
     return json_({ ok: false, error: 'busy' });
   } finally {

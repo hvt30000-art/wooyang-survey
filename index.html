@@ -44,7 +44,7 @@ button{font:inherit;letter-spacing:inherit;color:inherit}
 [hidden]{display:none!important}
 
 /* ---------- intro ---------- */
-.layers{position:relative;width:84px;height:54px;margin-left:auto;transform:scale(.75);transform-origin:top right}
+.layers{position:relative;width:84px;height:54px;margin:0 0 -14px auto;transform:scale(.75);transform-origin:top right}
 .layers i{position:absolute;display:block;background:var(--tint);opacity:.72;mix-blend-mode:var(--blend)}
 .layers i:nth-child(1){--tint:var(--t1);left:0;top:18px;width:40px;height:52px}
 .layers i:nth-child(2){--tint:var(--t2);left:22px;top:0;width:34px;height:40px}
@@ -53,12 +53,20 @@ button{font:inherit;letter-spacing:inherit;color:inherit}
 .title{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:8px 0 0;line-height:1}
 .t1{font-size:56px;font-weight:900;letter-spacing:-.05em}
 .t2{font-size:20px;font-weight:700;letter-spacing:-.03em}
-.intro-body{margin-top:16px;padding-top:14px;border-top:1.5px solid var(--strong)}
-.intro-h{margin:0 0 10px;font-size:20px;font-weight:700;letter-spacing:-.035em;line-height:1.4}
-.intro-body p{margin:0 0 10px;font-size:15.5px;line-height:1.65;letter-spacing:-.04em;text-align:justify;word-break:normal}
+.intro-body{margin-top:12px;padding-top:12px;border-top:1.5px solid var(--strong)}
+.intro-h{margin:0 0 8px;font-size:20px;font-weight:700;letter-spacing:-.035em;line-height:1.4}
+.intro-body p{margin:0 0 8px;font-size:15.5px;line-height:1.65;letter-spacing:-.04em;text-align:justify;word-break:normal}
 .intro-body p:last-child{margin-bottom:0}
 #view-intro{padding-inline:12px}
+body.intro-mode .wrap{padding-bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
 .dock.cta{padding-left:max(28px, env(safe-area-inset-left, 0px));padding-right:max(28px, env(safe-area-inset-right, 0px))}
+.name-row{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.name-row label{flex:0 0 auto;font-size:14px;font-weight:700}
+.name-row input{flex:1;min-width:0;padding:9px 12px;font:inherit;font-size:16px;color:var(--fg);background:var(--soft);border:1px solid transparent;border-radius:2px}
+.name-row input:focus{outline:none;border-color:var(--strong);background:var(--card)}
+.name-row.err input{border-color:var(--t2)}
+.name-msg{margin:0 0 6px;font-size:12.5px;color:var(--muted)}
+.name-row.err + .name-msg{color:var(--fg);font-weight:700}
 
 /* ---------- inner screens ---------- */
 .bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:1.5px solid var(--strong)}
@@ -77,7 +85,7 @@ button{font:inherit;letter-spacing:inherit;color:inherit}
 body.cards-mode .wrap{padding-block:10px 0}
 body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh - var(--bar-h) - env(safe-area-inset-bottom, 0px) - 10px);height:calc(100dvh - var(--bar-h) - env(safe-area-inset-bottom, 0px) - 10px)}
 #view-cards .bar{flex:0 0 auto;padding-bottom:10px}
-#view-cards .carousel{flex:1 1 auto;min-height:0;margin-top:12px;align-items:stretch}
+#view-cards .carousel{flex:1 1 auto;min-height:0;margin-top:12px;align-items:stretch;overflow:hidden}
 #view-cards .carousel>.card{overflow-y:auto;overscroll-behavior:contain}
 #view-cards .card .ans{flex:1 0 96px;min-height:96px;resize:none}
 #view-cards .car-nav{flex:0 0 auto;margin:10px 0}
@@ -113,14 +121,18 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
 .carousel::-webkit-scrollbar{display:none}
 .carousel>.card{flex:0 0 88%;scroll-snap-align:start}
 .carousel.single>.card{flex-basis:100%}
-.car-nav{display:flex;align-items:center;gap:8px;margin-top:14px}
-.arrow{flex:0 0 auto;width:32px;height:32px;font-size:17px;line-height:1;background:var(--bg);border:1px solid var(--line);border-radius:2px;cursor:pointer}
-.arrow:disabled{opacity:.3;cursor:default}
-.dots{flex:1;min-width:0;display:flex;flex-wrap:wrap;justify-content:center;gap:3px}
-.dot{position:relative;width:24px;height:24px;padding:0;font-size:11.5px;font-weight:500;font-variant-numeric:tabular-nums;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:2px;cursor:pointer;overflow:hidden}
-.dot.done{color:var(--fg)}
-.dot.done::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--tint)}
-.dot.on{border-color:var(--strong);color:var(--fg);font-weight:700}
+.car-nav{display:flex;align-items:center;gap:10px;margin-top:14px}
+.car-nav .btn{flex:1;min-width:0;padding-inline:12px}
+.pos{flex:0 0 auto;min-width:3.6em;font-size:13px;color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+
+/* consent step */
+.c-text{margin:0;font-size:15px;line-height:1.65}
+.c-text.muted{font-size:13.5px;color:var(--muted)}
+.choices{display:grid;gap:8px;margin-top:4px}
+.choice{min-height:52px;padding:12px 16px;font-size:16px;font-weight:700;text-align:left;background:var(--bg);border:1.5px solid var(--line);border-radius:2px;cursor:pointer}
+.choice[aria-pressed="true"]{background:var(--strong);color:var(--bg);border-color:var(--strong)}
+.choice[aria-pressed="true"]::before{content:"✓ "}
+.c-msg{min-height:1.6em;margin:0;font-size:13.5px;font-weight:700}
 
 /* draw */
 .stage{margin-top:16px}
@@ -162,15 +174,13 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
 .mi-head{display:flex;align-items:center;gap:8px}
 .mi-num{min-width:1.3em;font-weight:900;font-size:17px;font-variant-numeric:tabular-nums}
 .mi-title{flex:1;min-width:0;font-weight:700}
-.mi-grp{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)}
 .mi-q{margin:0;font-size:13px;color:var(--muted)}
 .mi-a{margin:2px 0 0;white-space:pre-wrap;font-size:15px}
 .mi-empty{justify-self:start;margin-top:2px;padding:4px 10px;font-size:13px;color:var(--muted);background:var(--soft);border:none;border-radius:2px;cursor:pointer}
 .mi-edit{justify-self:start;padding:0;font-size:12.5px;color:var(--muted);background:none;border:none;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
-.mine-consent{margin-top:18px}
-.send{margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
-.send-note{margin:0;font-size:13.5px}
-.send .actions{margin-top:12px}
+.mine-consent{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:18px 0 0;font-size:13.5px}
+.mine-consent button{padding:0;font-size:12.5px;color:var(--muted);background:none;border:none;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.sync-msg{margin:14px 0 0;font-size:13.5px}
 .copy-msg{font-size:13.5px;color:var(--muted)}
 #copy-fallback{width:100%;min-height:200px;margin-top:12px;padding:10px 12px;font:inherit;font-size:14px;color:var(--fg);background:var(--soft);border:1px solid var(--line);border-radius:2px}
 .note{margin:14px 0 0;font-size:13px;color:var(--muted)}
@@ -213,9 +223,9 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     <div class="bar"><button type="button" class="home" data-home>← 처음</button><div class="chips" id="filter-chips" role="radiogroup" aria-label="질문 보기"></div><span class="bar-count" data-count>0 / 9</span></div>
     <div class="carousel" id="carousel" aria-label="질문 카드"></div>
     <div class="car-nav">
-      <button type="button" class="arrow" id="prev" aria-label="이전 카드">‹</button>
-      <div class="dots" id="dots"></div>
-      <button type="button" class="arrow" id="next" aria-label="다음 카드">›</button>
+      <button type="button" class="btn" id="prev">이전</button>
+      <span class="pos" id="pos"></span>
+      <button type="button" class="btn primary" id="next">다음</button>
     </div>
   </section>
 
@@ -244,36 +254,30 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
       <h2 class="view-title">내 답 모아보기</h2>
       <p class="view-sub" id="mine-count"></p>
     </div>
-    <div class="field">
-      <label for="name">이름 (선택)</label>
-      <input id="name" type="text" placeholder="보내거나 복사할 때 함께 들어가요" autocomplete="name">
-    </div>
     <ol class="mine-list" id="mine-list"></ol>
-    <label class="consent mine-consent"><input type="checkbox" id="consent-mine" class="consent-box"> 내가 적은 답을 이름 없이, 누구인지 알 수 없도록 다른 답과 섞어 다듬은 뒤 재단 블로그나 결과보고에 써도 괜찮아요.</label>
-    <div class="send">
-      <p class="send-note">‘재단에 보내기’를 누르면 내 답과 위에 적은 이름이 우양재단으로 전송돼요. 고친 뒤 다시 보내면 가장 최근에 보낸 답으로 봐요.</p>
-      <div class="actions">
-        <button type="button" class="btn primary" id="send-btn">재단에 보내기</button>
-        <span class="copy-msg" id="send-msg" role="status"></span>
-      </div>
-    </div>
+    <p class="mine-consent"><span id="mine-consent-text"></span><button type="button" data-go="consent">바꾸기</button></p>
+    <p class="sync-msg" id="sync-msg" role="status"></p>
     <div class="actions">
       <button type="button" class="btn" id="copy-btn">전체 복사하기</button>
       <span class="copy-msg" id="copy-msg" role="status"></span>
     </div>
     <textarea id="copy-fallback" readonly hidden aria-label="복사할 내 답"></textarea>
-    <p class="note">답은 이 휴대폰의 이 브라우저에 저장돼요. 다른 앱이나 다른 휴대폰으로 열면 보이지 않으니, 재단에 보내거나 카톡 '나와의 채팅'에 복사해 두면 안전해요.</p>
+    <p class="note">적은 답은 이 휴대폰과 우양재단에 함께 자동 저장돼요. 다른 앱이나 다른 휴대폰으로 열면 이 휴대폰에 적은 답이 보이지 않으니, 카톡 '나와의 채팅'에 복사해 두면 다시 보기 좋아요.</p>
   </section>
 </main>
 
 <div class="dock cta" id="cta">
-  <div class="dock-in"><button type="button" class="btn primary" id="start-btn">카드 시작하기</button></div>
+  <div class="dock-in">
+    <div class="name-row" id="name-row"><label for="name">이름</label><input id="name" type="text" placeholder="이름을 적어 주세요" autocomplete="name" maxlength="40" required aria-describedby="name-msg"></div>
+    <p class="name-msg" id="name-msg">적은 답은 이름과 함께 우양재단에 자동 저장돼요.</p>
+    <button type="button" class="btn primary" id="start-btn">카드 시작하기</button>
+  </div>
 </div>
 <nav class="dock tabs" id="tabs" aria-label="화면" hidden>
   <div class="dock-in" role="tablist">
     <button type="button" class="tab" role="tab" id="tab-cards" data-view="cards" aria-controls="view-cards" aria-selected="false">질문 카드</button>
     <button type="button" class="tab" role="tab" id="tab-draw" data-view="draw" aria-controls="view-draw" aria-selected="false">카드 뽑기</button>
-    <button type="button" class="tab" role="tab" id="tab-mine" data-view="mine" aria-controls="view-mine" aria-selected="false">내 답<span class="badge" id="badge">0 / 9</span></button>
+    <button type="button" class="tab" role="tab" id="tab-mine" data-view="mine" aria-controls="view-mine" aria-selected="false">내 답 보기<span class="badge" id="badge">0 / 9</span></button>
   </div>
 </nav>
 
@@ -336,7 +340,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
 
   var state = {
     answers: saved.answers || {},
-    consent: !!saved.consent,
+    agree: saved.agree === true || saved.agree === false ? saved.agree : (saved.consent === true ? true : null),
     name: saved.name || '',
     filter: saved.filter === 'end' ? 'end' : 'all',
     drawn: Array.isArray(saved.drawn) ? saved.drawn : [],
@@ -350,10 +354,56 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
   function answeredCount(){ return CARDS.filter(function(c){ return has(c.id); }).length; }
 
   function save(){
+    scheduleSync();
     if (!storageOK) return false;
     try { localStorage.setItem(KEY, JSON.stringify(state)); return true; }
     catch(e){ storageOK = false; $('#storage-banner').hidden = false; return false; }
   }
+
+  /* ---------- auto-save to the foundation (Google Sheet) ---------- */
+  function payload(){
+    var answers = {};
+    CARDS.forEach(function(c){ answers[c.id] = has(c.id) ? state.answers[c.id].trim() : ''; });
+    return {device: state.device, name: state.name.trim(), consent: state.agree, answers: answers};
+  }
+  function sigOf(p){ return JSON.stringify([p.name, p.consent, p.answers]); }
+  function canSync(){ return !!state.name.trim() && (answeredCount() > 0 || state.agree !== null); }
+  function synced(){ return state.sentSig === sigOf(payload()); }
+  var syncTimer = null, syncing = false, syncAgain = false;
+  function scheduleSync(){
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(syncNow, 2500);
+  }
+  function syncNow(){
+    clearTimeout(syncTimer); syncTimer = null;
+    if (!canSync() || synced() || !window.fetch) { updateSyncMsg(); return; }
+    if (syncing) { syncAgain = true; return; }
+    var p = payload(), sig = sigOf(p), finished = false;
+    syncing = true; updateSyncMsg();
+    function end(ok){
+      if (finished) return;
+      finished = true; syncing = false;
+      if (ok) { state.sentSig = sig; try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
+      updateSyncMsg();
+      if (syncAgain) { syncAgain = false; syncNow(); }
+    }
+    setTimeout(function(){ end(false); }, 20000);
+    fetch(ENDPOINT, {method: 'POST', body: JSON.stringify(p)})
+      .then(function(r){ return r.json(); })
+      .then(function(d){ end(!!(d && d.ok)); }, function(){ end(false); });
+  }
+  function beaconSync(){
+    if (!canSync() || synced() || !navigator.sendBeacon) return;
+    try { navigator.sendBeacon(ENDPOINT, new Blob([JSON.stringify(payload())], {type: 'text/plain;charset=UTF-8'})); } catch(e){}
+  }
+  function updateSyncMsg(){
+    var el = $('#sync-msg'); if (!el) return;
+    if (!canSync()) el.textContent = '';
+    else if (synced()) el.textContent = '적은 답이 우양재단에 자동 저장됐어요.';
+    else if (syncing) el.textContent = '우양재단에 저장하는 중…';
+    else el.textContent = '아직 우양재단에 저장되지 않은 내용이 있어요. 인터넷이 연결되면 자동으로 저장돼요.';
+  }
+  window.addEventListener('online', syncNow);
   var saveTimer = null, pending = {};
   function scheduleSave(id){
     if (id) { pending[id] = true; setStatus(id, '저장 중…'); }
@@ -371,8 +421,8 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     Object.keys(pending).forEach(function(k){ setStatus(k, ok ? '저장됨' : '이 브라우저에선 저장이 안 돼요'); });
     pending = {};
   }
-  document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'hidden') flush(); });
-  window.addEventListener('pagehide', flush);
+  document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'hidden') { flush(); beaconSync(); } });
+  window.addEventListener('pagehide', function(){ flush(); beaconSync(); });
   document.addEventListener('click', function(e){
     var m = e.target.closest('.more'); if (!m) return;
     var w = m.parentNode, open = !w.classList.contains('open');
@@ -398,66 +448,62 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
   }
   function fillValues(root){
     $$('.ans', root).forEach(function(t){ t.value = state.answers[t.getAttribute('data-id')] || ''; });
-    $$('.consent-box', root).forEach(function(b){ b.checked = state.consent; });
+  }
+  function consentHTML(){
+    var h = '<article class="card" data-card="consent" style="--tint:var(--t-end)">';
+    h += '<div class="c-head"><span class="sw"></span><span>마지막</span></div>';
+    h += '<div class="c-titlerow"><h3 class="c-title" style="font-size:20px">답변 활용에 동의하시나요?</h3></div>';
+    h += '<p class="c-text">적어 주신 답을 <b>이름 없이, 누구인지 알 수 없도록</b> 다른 답과 섞어 다듬은 뒤 재단 블로그나 결과보고에 쓰려고 해요.</p>';
+    h += '<p class="c-text muted">동의하지 않아도 불이익은 없어요. 나중에 ‘내 답 보기’에서 바꿀 수 있어요.</p>';
+    h += '<div class="choices" role="group" aria-label="답변 활용 동의">';
+    h += '<button type="button" class="choice" data-agree="yes" aria-pressed="' + (state.agree === true) + '">동의해요</button>';
+    h += '<button type="button" class="choice" data-agree="no" aria-pressed="' + (state.agree === false) + '">동의하지 않아요</button>';
+    h += '</div><p class="c-msg" id="consent-msg" role="status"></p>';
+    h += '</article>';
+    return h;
   }
 
   /* ---------- carousel ---------- */
-  var carousel = $('#carousel'), dots = $('#dots'), prevBtn = $('#prev'), nextBtn = $('#next');
+  var carousel = $('#carousel'), prevBtn = $('#prev'), nextBtn = $('#next');
   function renderFilterChips(){
     $('#filter-chips').innerHTML = FILTERS.map(function(f){
       return '<button type="button" class="chip" role="radio" data-key="' + f[0] + '" aria-checked="' + (f[0] === state.filter) + '">' + f[1] + '</button>';
     }).join('');
   }
   function visibleCards(){ return state.filter === 'end' ? CARDS.filter(function(c){ return c.end; }) : CARDS; }
+  // one screen per step: the visible cards, then the consent step
+  function steps(){ return visibleCards().map(function(c){ return c.id; }).concat('consent'); }
+  function stepIndex(){ return Math.max(0, steps().indexOf(state.current)); }
   function renderCarousel(){
-    var list = visibleCards();
-    carousel.innerHTML = list.map(function(c){ return cardHTML(c, 'cards'); }).join('');
-    carousel.classList.toggle('single', list.length === 1);
+    var s = steps(), i = stepIndex(), id = s[i];
+    carousel.innerHTML = id === 'consent' ? consentHTML() : cardHTML(byId(id), 'cards');
+    carousel.classList.add('single');
     fillValues(carousel);
-    dots.innerHTML = list.length > 1 ? list.map(function(c, i){
-      return '<button type="button" class="dot' + (has(c.id) ? ' done' : '') + '" data-i="' + i + '" data-dot="' + c.id + '" style="--tint:' + tintOf(c) + '" aria-label="' + c.n + '번 카드">' + c.n + '</button>';
-    }).join('') : '';
-    $('.car-nav').hidden = list.length < 2;
-    restorePosition();
+    $('#pos').textContent = (i + 1) + ' / ' + s.length;
+    prevBtn.disabled = i === 0;
   }
-  function cardEls(){ return $$('.card', carousel); }
-  function scrollToIndex(i, smooth){
-    var cs = cardEls(); if (!cs[i]) return;
-    var left = cs[i].offsetLeft - cs[0].offsetLeft;
-    try { carousel.scrollTo({left: left, behavior: (smooth && !reduceMotion) ? 'smooth' : 'auto'}); } catch(e){ carousel.scrollLeft = left; }
-    updateNav(i);
+  function goStep(i){
+    var s = steps();
+    state.current = s[Math.max(0, Math.min(s.length - 1, i))];
+    save(); renderCarousel();
   }
-  function restorePosition(){
-    var ids = visibleCards().map(function(c){ return c.id; });
-    var idx = Math.max(0, ids.indexOf(state.current));
-    requestAnimationFrame(function(){ scrollToIndex(idx, false); });
-  }
-  function currentIndex(){
-    var cs = cardEls(); if (!cs.length) return 0;
-    var x = carousel.scrollLeft, max = carousel.scrollWidth - carousel.clientWidth;
-    if (x >= max - 2) return cs.length - 1;
-    var best = 0, bd = Infinity;
-    cs.forEach(function(c, i){ var d = Math.abs((c.offsetLeft - cs[0].offsetLeft) - x); if (d < bd) { bd = d; best = i; } });
-    return best;
-  }
-  function updateNav(idx){
-    var cs = cardEls();
-    $$('.dot', dots).forEach(function(d, i){ d.classList.toggle('on', i === idx); d.setAttribute('aria-current', i === idx ? 'true' : 'false'); });
-    prevBtn.disabled = idx <= 0;
-    nextBtn.disabled = idx >= cs.length - 1;
-    if (state.filter === 'all' && cs[idx] && state.current !== cs[idx].getAttribute('data-card')) { state.current = cs[idx].getAttribute('data-card'); scheduleSave(); }
-  }
-  var raf = null;
-  carousel.addEventListener('scroll', function(){
-    if (raf) return;
-    raf = requestAnimationFrame(function(){ raf = null; updateNav(currentIndex()); });
-  }, {passive:true});
-  prevBtn.addEventListener('click', function(){ scrollToIndex(Math.max(0, currentIndex() - 1), true); });
-  nextBtn.addEventListener('click', function(){ scrollToIndex(Math.min(cardEls().length - 1, currentIndex() + 1), true); });
-  dots.addEventListener('click', function(e){ var d = e.target.closest('.dot'); if (d) scrollToIndex(+d.getAttribute('data-i'), true); });
+  prevBtn.addEventListener('click', function(){ goStep(stepIndex() - 1); });
+  nextBtn.addEventListener('click', function(){
+    if (state.current !== 'consent') { goStep(stepIndex() + 1); return; }
+    if (state.agree === null) { $('#consent-msg').textContent = '동의 여부를 골라 주세요.'; return; }
+    show('mine');
+  });
+  carousel.addEventListener('click', function(e){
+    var b = e.target.closest('[data-agree]'); if (!b) return;
+    state.agree = b.getAttribute('data-agree') === 'yes';
+    save();
+    $$('[data-agree]', carousel).forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+    $('#consent-msg').textContent = '';
+  });
   $('#filter-chips').addEventListener('click', function(e){
     var b = e.target.closest('.chip'); if (!b) return;
     state.filter = b.getAttribute('data-key');
+    if (steps().indexOf(state.current) < 0) state.current = steps()[0];
     save(); renderFilterChips(); renderCarousel();
   });
 
@@ -509,14 +555,13 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
 
   /* ---------- mine ---------- */
   function renderMine(){
-    $('#mine-count').textContent = TOTAL + '개 중 ' + answeredCount() + '개를 적었어요';
-    $('#name').value = state.name;
+    $('#mine-count').textContent = state.name.trim() + ' 님 · ' + TOTAL + '개 중 ' + answeredCount() + '개를 적었어요';
     var ol = $('#mine-list'); ol.innerHTML = '';
     CARDS.forEach(function(c){
       var li = document.createElement('li');
       li.className = 'mine-item';
       li.style.setProperty('--tint', tintOf(c));
-      li.innerHTML = '<div class="mi-head"><span class="mi-num">' + c.n + '</span><span class="mi-title">' + c.title + '</span><span class="mi-grp"><span class="sw"></span>' + labelOf(c) + '</span></div><p class="mi-q">' + plain(c.q.join(' ')) + '</p>';
+      li.innerHTML = '<div class="mi-head"><span class="mi-num">' + c.n + '</span><span class="mi-title">' + c.title + '</span></div><p class="mi-q">' + plain(c.q.join(' ')) + '</p>';
       var b = document.createElement('button');
       b.type = 'button';
       b.setAttribute('data-go', c.id);
@@ -529,10 +574,10 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
       li.appendChild(b);
       ol.appendChild(li);
     });
-    $$('.consent-box', $('#view-mine')).forEach(function(x){ x.checked = state.consent; });
-    updateSendMsg();
+    $('#mine-consent-text').textContent = '답변 활용: ' + (state.agree === true ? '동의해요' : state.agree === false ? '동의하지 않아요' : '아직 고르지 않았어요');
+    updateSyncMsg();
   }
-  $('#mine-list').addEventListener('click', function(e){
+  $('#view-mine').addEventListener('click', function(e){
     var b = e.target.closest('[data-go]'); if (!b) return;
     goToCard(b.getAttribute('data-go'));
   });
@@ -542,7 +587,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     CARDS.forEach(function(c){
       lines.push('', c.n + '. ' + c.title, 'Q. ' + plain(c.q.join(' ')), '→ ' + (has(c.id) ? state.answers[c.id].trim() : '(안 적음)'));
     });
-    lines.push('', '답변 활용(이름 없이, 다른 답과 섞어 블로그·결과보고에 사용): ' + (state.consent ? '동의' : '동의 안 함'));
+    lines.push('', '답변 활용(이름 없이, 다른 답과 섞어 블로그·결과보고에 사용): ' + (state.agree === true ? '동의' : state.agree === false ? '동의 안 함' : '아직 안 고름'));
     return lines.join('\n');
   }
   $('#copy-btn').addEventListener('click', function(){
@@ -555,48 +600,12 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     } catch(e){ fail(); }
   });
 
-  function payload(){
-    var answers = {};
-    CARDS.forEach(function(c){ answers[c.id] = has(c.id) ? state.answers[c.id].trim() : ''; });
-    return {device: state.device, name: state.name.trim(), consent: state.consent, answers: answers};
-  }
-  function sigOf(p){ return JSON.stringify([p.name, p.consent, p.answers]); }
-  var sending = false;
-  function updateSendMsg(){
-    if (sending) return;
-    var msg = $('#send-msg');
-    if (!state.sentSig) msg.textContent = '';
-    else if (state.sentSig === sigOf(payload())) msg.textContent = '보냈어요.';
-    else msg.textContent = '보낸 뒤 고친 내용이 있어요. 다시 보내 주세요.';
-  }
-  $('#send-btn').addEventListener('click', function(){
-    var btn = this, msg = $('#send-msg');
-    if (sending) return;
-    if (!answeredCount()) { msg.textContent = '아직 적은 답이 없어요.'; return; }
-    var p = payload(), finished = false;
-    function end(ok){
-      if (finished) return;
-      finished = true; sending = false;
-      btn.disabled = false; btn.textContent = '재단에 보내기';
-      if (ok) { state.sentSig = sigOf(p); save(); msg.textContent = '보냈어요. 고친 뒤 다시 보내도 괜찮아요.'; }
-      else msg.textContent = '보내지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요. 계속 안 되면 아래 ‘전체 복사하기’로 복사해 우양재단 카카오톡 채널에 보내 주세요.';
-    }
-    if (!window.fetch) { end(false); return; }
-    sending = true; btn.disabled = true; btn.textContent = '보내는 중…'; msg.textContent = '';
-    flush();
-    setTimeout(function(){ end(false); }, 20000);
-    fetch(ENDPOINT, {method: 'POST', body: JSON.stringify(p)})
-      .then(function(r){ return r.json(); })
-      .then(function(d){ end(!!(d && d.ok)); }, function(){ end(false); });
-  });
-
   /* ---------- shared ---------- */
   function goToCard(id){
-    var c = byId(id);
     state.filter = 'all'; state.current = id; save();
-    renderFilterChips(); show('cards'); renderCarousel();
+    renderFilterChips(); show('cards');
     requestAnimationFrame(function(){
-      var t = $('#ans-cards-' + c.id);
+      var t = $('#ans-cards-' + id);
       if (t) { try { t.focus({preventScroll:true}); } catch(err){ t.focus(); } t.scrollIntoView({block:'center'}); }
     });
   }
@@ -605,9 +614,6 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     $('#badge').textContent = n + ' / ' + TOTAL;
     $$('[data-count]').forEach(function(el){ el.textContent = n + ' / ' + TOTAL + ' 적음'; });
     $('#start-btn').textContent = n ? '이어서 적기' : '카드 시작하기';
-    CARDS.forEach(function(c){
-      $$('[data-dot="' + c.id + '"]').forEach(function(d){ d.classList.toggle('done', has(c.id)); });
-    });
   }
   document.addEventListener('input', function(e){
     var t = e.target;
@@ -618,16 +624,14 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
       $$('[data-hint="' + id + '"]').forEach(function(h){ h.hidden = has(id); });
       scheduleSave(id); updateCounts();
     } else if (t.id === 'name') {
-      state.name = t.value; scheduleSave(); updateSendMsg();
+      state.name = t.value; scheduleSave();
+      if (state.name.trim()) setNameError(false);
     }
   });
-  document.addEventListener('change', function(e){
-    if (e.target.classList && e.target.classList.contains('consent-box')) {
-      state.consent = e.target.checked;
-      $$('.consent-box').forEach(function(b){ b.checked = state.consent; });
-      save(); updateSendMsg();
-    }
-  });
+  function setNameError(on){
+    $('#name-row').classList.toggle('err', on);
+    $('#name-msg').textContent = on ? '이름을 먼저 적어 주세요.' : '적은 답은 이름과 함께 우양재단에 자동 저장돼요.';
+  }
 
   /* ---------- screens ---------- */
   var VIEWS = ['intro','cards','draw','mine'];
@@ -637,7 +641,8 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     $('#cta').hidden = view !== 'intro';
     $('#tabs').hidden = view === 'intro';
     document.body.classList.toggle('cards-mode', view === 'cards');
-    if (view === 'cards') { fillValues($('#view-cards')); restorePosition(); }
+    document.body.classList.toggle('intro-mode', view === 'intro');
+    if (view === 'cards') renderCarousel();
     if (view === 'draw') renderDraw(false);
     if (view === 'mine') renderMine();
     updateCounts();
@@ -646,13 +651,20 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
   }
   $$('.tab').forEach(function(t){ t.addEventListener('click', function(){ show(t.getAttribute('data-view')); }); });
   $$('[data-home]').forEach(function(b){ b.addEventListener('click', function(){ show('intro'); }); });
-  $('#start-btn').addEventListener('click', function(){ show('cards'); });
+  $('#start-btn').addEventListener('click', function(){
+    var n = $('#name');
+    state.name = n.value;
+    if (!state.name.trim()) { setNameError(true); n.focus(); return; }
+    flush(); save(); show('cards');
+  });
 
   /* ---------- start ---------- */
   if (!storageOK) $('#storage-banner').hidden = false;
-  renderFilterChips(); renderCarousel();
+  $('#name').value = state.name;
+  renderFilterChips();
   var start = (location.hash || '').replace('#', '');
-  show(VIEWS.indexOf(start) > -1 ? start : 'intro');
+  show(VIEWS.indexOf(start) > -1 && state.name.trim() ? start : 'intro');
+  setTimeout(syncNow, 1000);
 })();
 </script>
 
