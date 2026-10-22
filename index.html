@@ -90,24 +90,21 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
 #view-cards .bar{flex:0 0 auto;padding-bottom:10px}
 #view-cards .carousel{flex:1 1 auto;min-height:0;margin-top:12px;align-items:stretch;overflow:hidden}
 #view-cards .carousel>.card{overflow-y:auto;overscroll-behavior:contain}
-#view-cards .card .ans{flex:1 0 96px;min-height:96px;resize:none}
-#view-cards .car-nav{flex:0 0 auto;margin:10px 0}
+#view-cards .card .ans{flex:1 0 76px;min-height:76px;resize:none}
+#view-cards .car-nav{flex:0 0 auto;margin:10px 0 24px}
 #view-cards .carousel.single{margin-bottom:12px}
 
 /* ---------- card ---------- */
-.card{--tint:var(--t1);min-width:0;display:flex;flex-direction:column;gap:10px;padding:16px 16px 14px;background:var(--card);border:1px solid var(--line)}
-.c-head{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:500}
-.c-titlerow{display:flex;align-items:baseline;gap:9px;margin-top:2px}
-.c-num{font-size:32px;font-weight:900;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
-.c-title{margin:0;font-size:15.5px;font-weight:700;letter-spacing:-.02em}
-.c-work{padding-top:9px;border-top:1px solid var(--line);font-size:13.5px;line-height:1.65;color:var(--muted)}
-.c-work p{margin:0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
-.c-work.open p{display:block;overflow:visible}
-.more{margin-top:3px;padding:2px 0;font-size:12.5px;font-weight:500;color:var(--fg);background:none;border:none;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
-.c-q{margin:0;font-size:18px;font-weight:700;line-height:1.5;letter-spacing:-.03em;text-wrap:pretty}
-.c-q.mixed{font-size:16.5px;font-weight:400;line-height:1.65;letter-spacing:-.02em}
+.card{--tint:var(--t1);min-width:0;display:flex;flex-direction:column;gap:8px;padding:14px 16px 14px;background:var(--card);border:1px solid var(--line)}
+.c-titlerow{display:flex;align-items:baseline;gap:9px}
+.c-num{font-size:28px;font-weight:900;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.c-title{margin:0;font-size:15px;font-weight:700;letter-spacing:-.02em}
+.c-work{padding-top:8px;border-top:1px solid var(--line);font-size:12.5px;line-height:1.55;letter-spacing:-.02em;color:var(--muted)}
+.c-work p{margin:0}
+.c-q{margin:0;font-size:16px;font-weight:700;line-height:1.45;letter-spacing:-.03em;text-wrap:pretty}
+.c-q.mixed{font-size:15px;font-weight:400;line-height:1.55;letter-spacing:-.02em}
 .c-q.mixed b{font-weight:700}
-.c-sub{margin:0;font-size:14px;line-height:1.6}
+.c-sub{margin:0;font-size:13px;line-height:1.55}
 .ans-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:2px}
 .ans-status{font-size:12px;color:var(--muted)}
 .ans-label{font-size:12px;font-weight:500;color:var(--muted)}
@@ -332,7 +329,6 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
   function $(s, r){ return (r || document).querySelector(s); }
   function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
   function tintOf(c){ return 'var(' + (c.end ? '--t-end' : TINTS[(c.n - 1) % TINTS.length]) + ')'; }
-  function labelOf(c){ return c.end ? '마무리' : '관람하며'; }
   function byId(id){ return CARDS.filter(function(c){ return c.id === id; })[0]; }
   function plain(s){ return s.replace(/<[^>]+>/g, ''); }
 
@@ -438,22 +434,14 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
   }
   document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'hidden') { flush(); beaconSync(); } });
   window.addEventListener('pagehide', function(){ flush(); beaconSync(); });
-  document.addEventListener('click', function(e){
-    var m = e.target.closest('.more'); if (!m) return;
-    var w = m.parentNode, open = !w.classList.contains('open');
-    w.classList.toggle('open', open);
-    m.setAttribute('aria-expanded', open ? 'true' : 'false');
-    m.textContent = open ? '접기' : '작품 설명 더 보기';
-  });
   function setStatus(id, text){ $$('[data-status="' + id + '"]').forEach(function(el){ el.textContent = text; }); }
 
   /* ---------- card markup ---------- */
   function cardHTML(c, ctx){
     var aid = 'ans-' + ctx + '-' + c.id;
     var h = '<article class="card" data-card="' + c.id + '" style="--tint:' + tintOf(c) + '">';
-    h += '<div class="c-head"><span class="sw"></span><span>' + labelOf(c) + '</span></div>';
     h += '<div class="c-titlerow"><span class="c-num">' + c.n + '</span><h3 class="c-title">' + c.title + '</h3></div>';
-    if (c.work) h += '<div class="c-work"><p>' + c.work + '</p><button type="button" class="more" aria-expanded="false">작품 설명 더 보기</button></div>';
+    if (c.work) h += '<div class="c-work"><p>' + c.work + '</p></div>';
     c.q.forEach(function(line){ h += '<p class="c-q' + (c.mixed ? ' mixed' : '') + '">' + line + '</p>'; });
     (c.sub || []).forEach(function(line){ h += '<p class="c-sub">' + line + '</p>'; });
     h += '<div class="ans-row"><label class="ans-label" for="' + aid + '">내 생각</label><span class="ans-status" data-status="' + c.id + '"></span></div>';
