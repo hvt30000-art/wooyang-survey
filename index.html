@@ -59,14 +59,15 @@ button{font:inherit;letter-spacing:inherit;color:inherit}
 .intro-body p{margin:0 0 8px;font-size:15.5px;line-height:1.65;letter-spacing:-.04em;text-align:justify;word-break:normal}
 .intro-body p:last-child{margin-bottom:0}
 #view-intro{padding-inline:12px}
-body.intro-mode .wrap{padding-bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
+body.intro-mode .wrap{padding-bottom:calc(166px + env(safe-area-inset-bottom, 0px))}
 .dock.cta{padding-left:max(28px, env(safe-area-inset-left, 0px));padding-right:max(28px, env(safe-area-inset-right, 0px))}
-.name-row{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.name-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.name-row.err{margin-bottom:4px}
 .name-row label{flex:0 0 auto;font-size:14px;font-weight:700}
 .name-row input{flex:1;min-width:0;padding:9px 12px;font:inherit;font-size:16px;color:var(--fg);background:var(--soft);border:1px solid transparent;border-radius:2px}
 .name-row input:focus{outline:none;border-color:var(--strong);background:var(--card)}
 .name-row.err input{border-color:var(--t2)}
-.name-msg{margin:0 0 6px;font-size:12.5px;color:var(--muted)}
+.name-msg{margin:0 0 10px;font-size:12.5px;color:var(--muted)}
 .name-msg:empty{display:none}
 .name-row.err + .name-msg{color:var(--fg);font-weight:700}
 
@@ -486,7 +487,11 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
   }
   function visibleCards(){ return state.filter === 'end' ? CARDS.filter(function(c){ return c.end; }) : CARDS; }
   // one screen per step: the visible cards, then the consent step
-  function steps(){ return state.filter === 'agree' ? ['consent'] : visibleCards().map(function(c){ return c.id; }).concat('consent'); }
+  function steps(){
+    if (state.filter === 'agree') return ['consent'];
+    var ids = visibleCards().map(function(c){ return c.id; });
+    return state.filter === 'end' ? ids : ids.concat('consent');
+  }
   function stepIndex(){ return Math.max(0, steps().indexOf(state.current)); }
   function renderCarousel(){
     var s = steps(), i = stepIndex(), id = s[i];
@@ -503,7 +508,11 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
   }
   prevBtn.addEventListener('click', function(){ goStep(stepIndex() - 1); });
   nextBtn.addEventListener('click', function(){
-    if (state.current !== 'consent') { goStep(stepIndex() + 1); return; }
+    if (state.current !== 'consent') {
+      // '마무리'의 9번 카드 다음은 동의 화면
+      if (stepIndex() === steps().length - 1) { state.filter = 'agree'; state.current = 'consent'; save(); renderFilterChips(); renderCarousel(); return; }
+      goStep(stepIndex() + 1); return;
+    }
     if (state.sendOk === null || state.agree === null) { $('#consent-msg').textContent = '두 질문에 모두 답해 주세요.'; return; }
     syncNow(); show('mine');
   });
