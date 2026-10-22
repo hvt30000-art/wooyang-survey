@@ -226,7 +226,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
 
   <!-- cards -->
   <section id="view-cards" class="view" aria-labelledby="tab-cards" hidden>
-    <div class="bar"><button type="button" class="home" data-home>← 처음</button><div class="chips" id="filter-chips" role="radiogroup" aria-label="질문 보기"></div><span class="bar-count" data-count>0 / 9</span></div>
+    <div class="bar"><button type="button" class="home" data-home>← 처음</button><div class="chips" id="filter-chips" role="radiogroup" aria-label="질문 보기"></div><span class="bar-count" data-count>0 / 10</span></div>
     <div class="carousel" id="carousel" aria-label="질문 카드"></div>
     <div class="car-nav">
       <button type="button" class="btn" id="prev">이전</button>
@@ -237,7 +237,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
 
   <!-- draw -->
   <section id="view-draw" class="view" aria-labelledby="tab-draw" hidden>
-    <div class="bar"><button type="button" class="home" data-home>← 처음</button><span class="bar-title">카드 뽑기</span><span class="bar-count" data-count>0 / 9</span></div>
+    <div class="bar"><button type="button" class="home" data-home>← 처음</button><span class="bar-title">카드 뽑기</span><span class="bar-count" data-count>0 / 10</span></div>
     <div class="view-head">
       <h2 class="view-title">카드 뽑기</h2>
       <p class="view-sub">카드를 뽑아 그 질문으로 이야기해요. 적어 둔 내 답이 함께 보여요. 9번 마무리 카드는 마지막에 다 함께 나눠요.</p>
@@ -255,7 +255,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
 
   <!-- mine -->
   <section id="view-mine" class="view" aria-labelledby="tab-mine" hidden>
-    <div class="bar"><button type="button" class="home" data-home>← 처음</button><span class="bar-title">내 답</span><span class="bar-count" data-count>0 / 9</span></div>
+    <div class="bar"><button type="button" class="home" data-home>← 처음</button><span class="bar-title">내 답</span><span class="bar-count" data-count>0 / 10</span></div>
     <div class="view-head">
       <h2 class="view-title">내 답 모아보기</h2>
       <p class="view-sub" id="mine-count"></p>
@@ -283,7 +283,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
   <div class="dock-in" role="tablist">
     <button type="button" class="tab" role="tab" id="tab-cards" data-view="cards" aria-controls="view-cards" aria-selected="false">질문 카드</button>
     <button type="button" class="tab" role="tab" id="tab-draw" data-view="draw" aria-controls="view-draw" aria-selected="false">카드 뽑기</button>
-    <button type="button" class="tab" role="tab" id="tab-mine" data-view="mine" aria-controls="view-mine" aria-selected="false">내 답 보기<span class="badge" id="badge">0 / 9</span></button>
+    <button type="button" class="tab" role="tab" id="tab-mine" data-view="mine" aria-controls="view-mine" aria-selected="false">내 답 보기<span class="badge" id="badge">0 / 10</span></button>
   </div>
 </nav>
 
@@ -359,6 +359,10 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
   function newDevice(){ return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10); }
   function has(id){ return !!(state.answers[id] && state.answers[id].trim()); }
   function answeredCount(){ return CARDS.filter(function(c){ return has(c.id); }).length; }
+  // progress counts the consent screen as the 10th page
+  var STEPS_TOTAL = TOTAL + 1;
+  function consentDone(){ return state.sendOk !== null && state.agree !== null; }
+  function doneCount(){ return answeredCount() + (consentDone() ? 1 : 0); }
 
   function save(){
     scheduleSync();
@@ -523,6 +527,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     save();
     $$('[data-agree^="' + v[0] + ':"]', carousel).forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
     $('#consent-msg').textContent = '';
+    updateCounts();
   });
   $('#filter-chips').addEventListener('click', function(e){
     var b = e.target.closest('.chip'); if (!b) return;
@@ -579,7 +584,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
 
   /* ---------- mine ---------- */
   function renderMine(){
-    $('#mine-count').textContent = state.name.trim() + ' 님 · ' + TOTAL + '개 중 ' + answeredCount() + '개를 적었어요';
+    $('#mine-count').textContent = state.name.trim() + ' 님 · ' + STEPS_TOTAL + '개 중 ' + doneCount() + '개를 마쳤어요';
     var ol = $('#mine-list'); ol.innerHTML = '';
     CARDS.forEach(function(c){
       var li = document.createElement('li');
@@ -635,9 +640,9 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     });
   }
   function updateCounts(){
-    var n = answeredCount();
-    $('#badge').textContent = n + ' / ' + TOTAL;
-    $$('[data-count]').forEach(function(el){ el.textContent = n + ' / ' + TOTAL + ' 적음'; });
+    var n = answeredCount(), d = doneCount();
+    $('#badge').textContent = d + ' / ' + STEPS_TOTAL;
+    $$('[data-count]').forEach(function(el){ el.textContent = d + ' / ' + STEPS_TOTAL + ' 완료'; });
     $('#start-btn').textContent = n ? '이어서 적기' : '카드 시작하기';
   }
   document.addEventListener('input', function(e){
