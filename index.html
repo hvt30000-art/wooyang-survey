@@ -324,7 +324,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
   ];
   var TOTAL = CARDS.length;
   var TINTS = ['--t1','--t2','--t3','--t4'];
-  var FILTERS = [['all','전체'],['end','마무리']];
+  var FILTERS = [['all','전체'],['end','마무리'],['agree','동의']];
   var KEY = 'suhdoho-cards-v2';
   var ENDPOINT = 'https://script.google.com/macros/s/AKfycbwVM_OK59Y4oLPKP5Fdv6abKNPd8eLHDcG-CxZScpi-RJhwzkVfwuwx0uziZW2-dpXT/exec';
 
@@ -348,7 +348,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     agree: saved.agree === true || saved.agree === false ? saved.agree : (saved.consent === true ? true : null),
     sendOk: saved.sendOk === true || saved.sendOk === false ? saved.sendOk : null,
     name: saved.name || '',
-    filter: saved.filter === 'end' ? 'end' : 'all',
+    filter: saved.filter === 'end' || saved.filter === 'agree' ? saved.filter : 'all',
     drawn: Array.isArray(saved.drawn) ? saved.drawn : [],
     shown: saved.shown || null,
     current: saved.current || 'c1',
@@ -486,7 +486,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
   }
   function visibleCards(){ return state.filter === 'end' ? CARDS.filter(function(c){ return c.end; }) : CARDS; }
   // one screen per step: the visible cards, then the consent step
-  function steps(){ return visibleCards().map(function(c){ return c.id; }).concat('consent'); }
+  function steps(){ return state.filter === 'agree' ? ['consent'] : visibleCards().map(function(c){ return c.id; }).concat('consent'); }
   function stepIndex(){ return Math.max(0, steps().indexOf(state.current)); }
   function renderCarousel(){
     var s = steps(), i = stepIndex(), id = s[i];
@@ -618,7 +618,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
 
   /* ---------- shared ---------- */
   function goToCard(id){
-    state.filter = 'all'; state.current = id; save();
+    state.filter = id === 'consent' ? 'agree' : 'all'; state.current = id; save();
     renderFilterChips(); show('cards');
     requestAnimationFrame(function(){
       var t = $('#ans-cards-' + id);
