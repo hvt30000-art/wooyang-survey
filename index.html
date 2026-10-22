@@ -208,7 +208,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
 </head>
 <body>
 <main class="wrap">
-  <p class="banner" id="storage-banner" hidden>이 브라우저에서는 답이 저장되지 않아요. 창을 닫기 전에 '내 답'에서 복사해 두세요.</p>
+  <p class="banner" id="storage-banner" hidden>지금 연 화면에서는 창을 닫으면 적은 답이 사라질 수 있어요. 다 적은 뒤 ‘내 답 보기’에서 복사해 두세요.</p>
 
   <!-- intro -->
   <section id="view-intro" class="view" aria-label="소개">
@@ -419,7 +419,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     clearTimeout(saveTimer);
     saveTimer = setTimeout(function(){
       var ok = save();
-      Object.keys(pending).forEach(function(k){ setStatus(k, ok ? '저장됨' : '이 브라우저에선 저장이 안 돼요'); });
+      Object.keys(pending).forEach(function(k){ setStatus(k, ok ? '저장됨' : ''); });
       pending = {};
     }, 400);
   }
@@ -427,7 +427,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     if (!saveTimer) return;
     clearTimeout(saveTimer); saveTimer = null;
     var ok = save();
-    Object.keys(pending).forEach(function(k){ setStatus(k, ok ? '저장됨' : '이 브라우저에선 저장이 안 돼요'); });
+    Object.keys(pending).forEach(function(k){ setStatus(k, ok ? '저장됨' : ''); });
     pending = {};
   }
   document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'hidden') { flush(); beaconSync(); } });
