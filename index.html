@@ -55,8 +55,7 @@ button{font:inherit;letter-spacing:inherit;color:inherit}
 .t1{font-size:56px;font-weight:900;letter-spacing:-.05em}
 .t2{font-size:20px;font-weight:700;letter-spacing:-.03em}
 .intro-body{margin-top:12px;padding-top:12px;border-top:1.5px solid var(--strong)}
-.intro-h{margin:0 0 8px;font-size:20px;font-weight:700;letter-spacing:-.035em;line-height:1.4}
-.intro-body p{margin:0 0 8px;font-size:15.5px;line-height:1.65;letter-spacing:-.04em;text-align:justify;word-break:normal}
+.intro-body p{margin:0 0 10px;font-size:15.5px;line-height:1.7;letter-spacing:-.045em;text-align:justify;word-break:keep-all}
 .intro-body p:last-child{margin-bottom:0}
 #view-intro{padding-inline:12px}
 body.intro-mode .wrap{padding-bottom:calc(166px + env(safe-area-inset-bottom, 0px))}
@@ -95,13 +94,16 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
 #view-cards .carousel.single{margin-bottom:12px}
 
 /* ---------- card ---------- */
-.card{--tint:var(--t1);min-width:0;display:flex;flex-direction:column;gap:8px;padding:14px 16px 14px;background:var(--card);border:1px solid var(--line)}
+.card{--tint:var(--t1);position:relative;min-width:0;display:flex;flex-direction:column;gap:8px;padding:14px 16px 14px;background:var(--card);border:1px solid var(--line)}
 .c-titlerow{display:flex;align-items:baseline;gap:9px}
 .c-num{font-size:28px;font-weight:900;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
 .c-title{margin:0;font-size:15px;font-weight:700;letter-spacing:-.02em}
-.c-work{padding-top:8px;border-top:1px solid var(--line);font-size:12.5px;line-height:1.55;letter-spacing:-.02em;color:var(--muted)}
+.c-work{padding-top:8px;border-top:1px solid var(--line);font-size:12.5px;line-height:1.55;letter-spacing:-.03em;color:var(--muted);text-align:justify;word-break:keep-all}
 .c-work p{margin:0}
 .c-q{margin:0;font-size:16px;font-weight:700;line-height:1.45;letter-spacing:-.03em;text-wrap:pretty}
+.c-work + .c-q{margin-top:6px}
+.c-q + .c-q{margin-top:-4px}
+.card::before{content:"";position:absolute;top:-1px;right:16px;width:18px;height:30px;background:var(--tint);opacity:.85;mix-blend-mode:var(--blend)}
 .c-q.mixed{font-size:15px;font-weight:400;line-height:1.55;letter-spacing:-.02em}
 .c-q.mixed b{font-weight:700}
 .c-sub{margin:0;font-size:13px;line-height:1.55}
@@ -214,7 +216,6 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     <div class="layers" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
     <h1 class="title"><span class="t1">서도호전</span><span class="t2">감상카드</span></h1>
     <div class="intro-body">
-      <h2 class="intro-h">공간의 기억, 각자의 시선</h2>
       <p>서도호는 집과 이동, 개인과 공동체의 관계를 통해 공간에 깃든 기억과 정체성을 탐색합니다. 그의 작품을 따라 걷는 일은 우리가 머물렀던 장소와 맺어 온 관계를 새롭게 돌아보는 시간이기도 합니다.</p>
       <p>작품 앞에서 눈길이 머문 장면과 떠오른 생각을 이 카드에 담아 보세요. 작품에서 읽은 의미가 나의 기억이나 경험과 어떻게 이어지는지, 짧은 단어나 문장으로 남겨도 좋습니다.</p>
       <p>관람 후에는 카페에서 각자의 기록을 펼쳐 서로의 시선을 나눕니다. 같은 작품에서 출발한 서로 다른 이야기를 통해, 오늘의 감상이 조금 더 넓어지기를 바랍니다.</p>
@@ -237,7 +238,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     <div class="bar"><button type="button" class="home" data-home>← 처음</button><span class="bar-title">카드 뽑기</span><span class="bar-count" data-count>0 / 10</span></div>
     <div class="view-head">
       <h2 class="view-title">카드 뽑기</h2>
-      <p class="view-sub">카드를 뽑아 그 질문으로 이야기해요. 적어 둔 내 답이 함께 보여요. 9번 마무리 카드는 마지막에 다 함께 나눠요.</p>
+      <p class="view-sub">카드를 뽑아 그 질문으로 이야기해요. 적어 둔 내 답이 함께 보여요.</p>
     </div>
     <div class="stage" id="stage">
       <div class="stack" id="stack" aria-hidden="true"><div><div class="stack-in"><i></i><i></i><i></i><i></i></div><p>카드를 뽑아 보세요</p></div></div>
@@ -245,6 +246,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     </div>
     <div class="actions">
       <button type="button" class="btn primary" id="draw-btn">카드 뽑기</button>
+      <button type="button" class="btn" id="reset-btn" hidden>처음부터 다시</button>
       <span class="remain" id="remain"></span>
     </div>
     <div class="history" id="history"></div>
@@ -545,6 +547,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     }
     var remaining = pool.length - u.length;
     $('#draw-btn').textContent = remaining === 0 ? '다시 섞기' : (u.length ? '다음 카드 뽑기' : '카드 뽑기');
+    $('#reset-btn').hidden = remaining === 0 || !u.length;
     $('#remain').textContent = remaining === 0 ? '카드를 다 뽑았어요' : '남은 카드 ' + remaining + '장';
     $('#history').innerHTML = u.length ? '<span>뽑은 카드</span>' + u.map(function(id){
       var c = byId(id);
@@ -554,6 +557,9 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
   $('#history').addEventListener('click', function(e){
     var b = e.target.closest('[data-show]'); if (!b) return;
     state.shown = b.getAttribute('data-show'); save(); renderDraw(true);
+  });
+  $('#reset-btn').addEventListener('click', function(){
+    state.drawn = []; state.shown = null; save(); renderDraw(false);
   });
   $('#draw-btn').addEventListener('click', function(){
     var pool = deck(), u = used();
