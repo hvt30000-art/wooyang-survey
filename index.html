@@ -55,7 +55,7 @@ button{font:inherit;letter-spacing:inherit;color:inherit}
 .t1{font-size:56px;font-weight:900;letter-spacing:-.05em}
 .t2{font-size:20px;font-weight:700;letter-spacing:-.03em}
 .intro-body{margin-top:12px;padding-top:12px;border-top:1.5px solid var(--strong)}
-.intro-body p{margin:0 0 10px;font-size:15.5px;line-height:1.7;letter-spacing:-.045em;text-align:justify;word-break:keep-all}
+.intro-body p{margin:0 0 10px;font-size:15.5px;line-height:1.7;letter-spacing:-.03em;text-align:left;word-break:keep-all}
 .intro-body p:last-child{margin-bottom:0}
 #view-intro{padding-inline:12px}
 body.intro-mode .wrap{padding-bottom:calc(166px + env(safe-area-inset-bottom, 0px))}
@@ -98,9 +98,9 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
 .c-titlerow{display:flex;align-items:baseline;gap:9px}
 .c-num{font-size:28px;font-weight:900;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
 .c-title{margin:0;font-size:15px;font-weight:700;letter-spacing:-.02em}
-.c-work{padding-top:8px;border-top:1px solid var(--line);font-size:12.5px;line-height:1.55;letter-spacing:-.03em;color:var(--muted);text-align:justify;word-break:keep-all}
+.c-work{padding-top:8px;border-top:1px solid var(--line);font-size:12.5px;line-height:1.55;letter-spacing:-.02em;color:var(--muted);word-break:keep-all}
 .c-work p{margin:0}
-.c-q{margin:0;font-size:16px;font-weight:700;line-height:1.45;letter-spacing:-.03em;text-wrap:pretty}
+.c-q{margin:0;font-size:16px;font-weight:700;line-height:1.45;letter-spacing:-.03em}
 .c-work + .c-q{margin-top:6px}
 .c-q + .c-q{margin-top:-4px}
 .card::before{content:"";position:absolute;top:-1px;right:16px;width:18px;height:30px;background:var(--tint);opacity:.85;mix-blend-mode:var(--blend)}
@@ -289,33 +289,33 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
 <script>
 (function(){
   var CARDS = [
-    {id:'c1', n:1, title:'오늘의 한 장면',
-     q:['오늘 전시에서 오래 바라본 작품이나 장면은 무엇인가요? 무엇이 시선을 붙잡았는지 적어 보세요.'],
-     sub:['사진을 찍었다면, 그중 한 장을 골라 함께 나누어도 좋습니다.']},
-    {id:'c2', n:2, title:'나의 씨앗',
+    {id:'c2', n:1, title:'나의 씨앗',
      work:'〈시드 뱅크〉는 작가의 어린 시절 그림과 학창 시절 작업, 기록을 모은 공간입니다. 이후의 작품으로 이어지는 관심과 실험을 살펴볼 수 있습니다.',
      q:['어린 시절, 시간 가는 줄 모르고 몰두했던 일은 무엇인가요? 그때의 관심이 지금의 나와 이어지는 부분이 있나요?']},
-    {id:'c3', n:3, title:'오래 기억하고 싶은 장소',
+    {id:'c3', n:2, title:'오래 기억하고 싶은 장소',
      work:'〈러빙/러빙〉이라는 제목은 ‘문지르다(rubbing)’와 ‘사랑하다(loving)’의 비슷한 발음에서 비롯되었습니다. 작가에게 공간의 표면을 문지르는 일은 그곳을 사랑하는 행위이기도 합니다. 작별을 앞둔 공간에 종이를 밀착시키고 문질러, 그곳에서 보낸 시간의 흔적을 남기는 거죠.',
      q:['떠나왔거나 언젠가 떠나게 될 장소 중, 오래 기억하고 싶은 곳이 있나요? 〈러빙/러빙〉처럼 그곳의 흔적을 남긴다면, 어느 부분을 기록하고 싶나요?']},
-    {id:'c4', n:4, title:'나만의 완벽한 집',
+    {id:'c4', n:3, title:'나만의 완벽한 집',
      work:'〈완벽한 집〉은 작가가 현재 거주하는 런던의 집을 반투명한 천으로 재현하고, 그 안에 여러 도시에서 살았던 집의 요소들을 겹쳐 놓은 작품입니다. 서로 다른 시간과 장소의 기억들이 하나로 포개어진 이곳을 “완벽한 집”이라고 이름 붙인 이유는 무엇일까요? 지나온 장소의 기억을 품고 새로운 삶을 이어 갈 때마다, 집도 함께 새로워집니다.',
      q:['내가 지냈거나 자주 찾는 장소에서 세 가지를 가져와 나만의 집을 만든다면, 무엇을 고르고 싶나요?'],
      sub:['물건이나 공간의 일부, 그곳의 분위기나 생활방식도 좋습니다. 각각을 고른 이유를 함께 적어 보세요.']},
-    {id:'c5', n:5, title:'다리를 놓는다면',
+    {id:'c5', n:4, title:'다리를 놓는다면',
      work:'〈다리 프로젝트〉는 작가가 살아온 서울과 뉴욕을 하나의 다리로 잇고, 그 중심에 집을 세우는 상상에서 출발한 작업입니다. 물리적 거리와 정서적 간극을 메우려는 이 구상은 건축가, 기상학자 등 여러 분야의 전문가들과의 협업을 통해 구체화됩니다. 상상이 현실을 향해 나아가는 흥미로운 여정, 어떻게 보셨나요?',
      q:['다리를 놓아 이어 보고 싶은 두 곳이 있나요? 그 사이를 자유롭게 오갈 수 있다면, 무엇이 달라질까요?'],
      sub:['장소뿐 아니라 사람과 사람, 과거와 현재를 잇는 다리도 상상해 볼 수 있습니다.']},
-    {id:'c6', n:6, title:'우리 안의 나',
+    {id:'c6', n:5, title:'우리 안의 나',
      work:'〈Who Am We?〉는 작가의 고등학교 졸업앨범 속 얼굴들을 작게 축소해 벽지처럼 배열한 작품입니다. 멀리서는 하나의 무늬를 이루고, 가까이에서는 저마다 다른 얼굴이 드러납니다. 작은 얼굴들이 모여 거대한 벽면을 이루듯, ‘우리’라는 전체도 각자의 삶을 가진 수많은 개인으로 이루어져 있습니다.',
      q:['‘같은 과 학생들’이나 ‘동네 사람들’처럼 한데 묶어 생각하던 사람 중, 이야기를 나눈 뒤 새롭게 보인 사람이 있나요?'],
      sub:['그 사람의 어떤 모습이나 이야기가 기억에 남았나요?']},
-    {id:'c7', n:7, title:'나를 지탱하는 것들',
+    {id:'c7', n:6, title:'나를 지탱하는 것들',
      work:'〈바닥〉에서는 두 팔을 위로 뻗은 채 유리판을 지탱하고 있는 약 18만 개의 작은 PVC 인물을 발견할 수 있습니다. 내가 밟고 있는 바닥이 사실은 수많은 개인의 희생과 지지 위에서 유지되고 있다는 것을 깨닫는 순간, 저마다의 묵직한 감정을 느끼게 되는데요. 이 거대한 사회 속에서 과연 우리는 어떤 위치에 서 있는 걸까요?',
      q:['바닥을 내려다봤을 때 어떤 기분이었나요?','나의 하루를 지탱해주는 사람들은 누구인가요?']},
-    {id:'c8', n:8, title:'몸에 지니는 기억',
+    {id:'c8', n:7, title:'몸에 지니는 기억',
      work:'〈사랑의 기억〉에서 작가는 자신의 코트 안쪽에 가족의 옷에서 떼어 낸 주머니를 달고, 가족의 추억이 담긴 사물을 넣었습니다. 오래 손이 닿은 물건은 함께 보낸 시간을 간직하는 장소가 되고, 몸을 감싸는 옷은 가족의 기억을 품는 또 하나의 집이 됩니다.',
      q:['소중한 기억이나 누군가와의 관계를 간직하고 싶어, 몸에 지니고 다니는 물건이 있나요? 그 물건에 어떤 기억을 담아 두고 있는지도 함께 적어 보세요.']},
+    {id:'c1', n:8, title:'오늘의 한 장면',
+     q:['오늘 전시에서 오래 바라본 작품이나 장면은 무엇인가요? 무엇이 시선을 붙잡았는지 적어 보세요.'],
+     sub:['사진을 찍었다면, 그중 한 장을 골라 함께 나누어도 좋습니다.']},
     {id:'c9', n:9, end:true, title:'나에게 집은',
      mixed:true,
      q:['전시를 보고 난 지금, <b>서도호에게 ‘집’은 어떤 의미인 것 같나요?</b> 그렇게 느끼게 한 작품이나 장면을 함께 이야기해 주세요.','<b>나에게 ‘집’은 어떤 의미인가요?</b> 집처럼 느껴지는 장소나 물건, 사람을 떠올리며 적어 보세요.'],
@@ -350,7 +350,7 @@ body.cards-mode #view-cards{display:flex;flex-direction:column;height:calc(100vh
     filter: saved.filter === 'end' || saved.filter === 'agree' ? saved.filter : 'all',
     drawn: Array.isArray(saved.drawn) ? saved.drawn : [],
     shown: saved.shown || null,
-    current: saved.current || 'c1',
+    current: saved.current || CARDS[0].id,
     device: saved.device || newDevice(),
     sentSig: saved.sentSig || null
   };

@@ -14,18 +14,18 @@
  */
 
 var SHEET_NAME = '답변';
-var CARDS = [
-  ['c1', '1. 오늘의 한 장면'],
-  ['c2', '2. 나의 씨앗'],
-  ['c3', '3. 오래 기억하고 싶은 장소'],
-  ['c4', '4. 나만의 완벽한 집'],
-  ['c5', '5. 다리를 놓는다면'],
-  ['c6', '6. 우리 안의 나'],
-  ['c7', '7. 나를 지탱하는 것들'],
-  ['c8', '8. 몸에 지니는 기억'],
+var CARDS = [   // 화면에 나오는 순서대로 (id는 페이지의 저장 키라서 바꾸지 않음)
+  ['c2', '1. 나의 씨앗'],
+  ['c3', '2. 오래 기억하고 싶은 장소'],
+  ['c4', '3. 나만의 완벽한 집'],
+  ['c5', '4. 다리를 놓는다면'],
+  ['c6', '5. 우리 안의 나'],
+  ['c7', '6. 나를 지탱하는 것들'],
+  ['c8', '7. 몸에 지니는 기억'],
+  ['c1', '8. 오늘의 한 장면'],
   ['c9', '9. 나에게 집은']
 ];
-var HEADER = ['받은 시각', '구분번호', '이름', '활용 동의', '적은 개수']
+var HEADER = ['받은 시각', '구분 번호', '이름', '활용 동의', '적은 개수']
   .concat(CARDS.map(function (c) { return c[1]; }));
 var MAX_ANSWER = 5000;   // 답 하나 최대 글자 수
 var MAX_NAME = 40;
@@ -112,6 +112,10 @@ function getSheet_() {
     sheet.appendRow(HEADER);
     sheet.setFrozenRows(1);
     sheet.getRange(1, 1, 1, HEADER.length).setFontWeight('bold');
+  } else {
+    // 질문 순서가 바뀌었으면 머리글을 새 순서로 맞춥니다.
+    var head = sheet.getRange(1, 1, 1, HEADER.length);
+    if (head.getValues()[0].join('\n') !== HEADER.join('\n')) head.setValues([HEADER]).setFontWeight('bold');
   }
   return sheet;
 }
