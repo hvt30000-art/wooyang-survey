@@ -193,6 +193,7 @@ body.cards-mode .pager:not([hidden]){display:flex;flex-direction:column;height:c
 .mine-consent{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:18px 0 0;font-size:13.5px}
 .mine-consent button{padding:0;font-size:12.5px;color:var(--muted);background:none;border:none;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
 .sync-msg{margin:14px 0 0;font-size:13.5px}
+.survey-note{margin:12px 0 0;padding:10px 12px;background:var(--soft);font-size:13.5px;font-weight:500;line-height:1.55}
 .copy-msg{font-size:13.5px;color:var(--muted)}
 #copy-fallback{width:100%;min-height:200px;margin-top:12px;padding:10px 12px;font:inherit;font-size:14px;color:var(--fg);background:var(--soft);border:1px solid var(--line);border-radius:2px}
 .note{margin:14px 0 0;font-size:13px;color:var(--muted)}
@@ -255,6 +256,7 @@ body.cards-mode .pager:not([hidden]){display:flex;flex-direction:column;height:c
     <div class="view-head">
       <h2 class="view-title">내 답 모아보기</h2>
       <p class="view-sub" id="mine-count"></p>
+      <p class="survey-note">오늘 집에 가는 길에 카카오톡으로 짧은 설문을 보내 드릴게요. 익명으로 참여할 수 있으니 솔직한 의견을 들려주세요.</p>
     </div>
     <ol class="mine-list" id="mine-list"></ol>
     <p class="mine-consent"><span id="mine-consent-text"></span><button type="button" data-go="consent">바꾸기</button></p>
@@ -299,8 +301,8 @@ body.cards-mode .pager:not([hidden]){display:flex;flex-direction:column;height:c
      sub:['인생의 한 순간이어도, 여러 개여도, 지금 바로 떠오르는 아무것이어도 좋아요.']},
     {id:'q4', n:4, title:'서도호에게 집은', mixed:true,
      q:['전시를 보고 난 지금, <b>서도호에게 ‘집’은 어떤 의미였던 것 같나요?</b> 그렇게 느끼게 한 작품이나 장면이 있나요?']},
-    {id:'q5', n:5, end:true, title:'오늘 전시는 어땠나요',
-     q:['오늘 전시는 전반적으로 어땠나요? 보기 전과 보고 난 뒤 달라진 생각이나, 새롭게 느낀 점이 있다면 함께 적어 보세요.']}
+    {id:'q5', n:5, end:true, title:'오늘 전시는 어땠나요', mixed:true,
+     q:['<b>오늘 전시는 전반적으로 어땠나요?</b> 보기 전과 보고 난 뒤 달라진 생각이나, 새롭게 느낀 점이 있다면 함께 적어 보세요.']}
   ];
   // 전시 둘러보기 (관람 동선 순서, 마지막은 오디오 가이드). 사진은 img/ 폴더
   var GUIDE = [
