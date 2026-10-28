@@ -14,16 +14,12 @@
  */
 
 var SHEET_NAME = '답변';
-var CARDS = [   // 화면에 나오는 순서대로 (id는 페이지의 저장 키라서 바꾸지 않음)
-  ['c2', '1. 나의 씨앗'],
-  ['c3', '2. 오래 기억하고 싶은 장소'],
-  ['c4', '3. 나만의 완벽한 집'],
-  ['c5', '4. 다리를 놓는다면'],
-  ['c6', '5. 우리 안의 나'],
-  ['c7', '6. 나를 지탱하는 것들'],
-  ['c8', '7. 몸에 지니는 기억'],
-  ['c1', '8. 오늘의 한 장면'],
-  ['c9', '9. 나에게 집은']
+var CARDS = [   // 화면에 나오는 순서대로 (id는 페이지의 저장 키)
+  ['q1', '1. 가장 기억에 남는 작품'],
+  ['q2', '2. 오래 기억하고 싶은 장소'],
+  ['q3', '3. 내 재킷에 넣고 싶은 추억'],
+  ['q4', '4. 서도호에게 집은'],
+  ['q5', '5. 나에게 집은']
 ];
 var HEADER = ['받은 시각', '구분 번호', '이름', '활용 동의', '적은 개수']
   .concat(CARDS.map(function (c) { return c[1]; }));
@@ -116,6 +112,8 @@ function getSheet_() {
     // 질문 순서가 바뀌었으면 머리글을 새 순서로 맞춥니다.
     var head = sheet.getRange(1, 1, 1, HEADER.length);
     if (head.getValues()[0].join('\n') !== HEADER.join('\n')) head.setValues([HEADER]).setFontWeight('bold');
+    var extra = sheet.getLastColumn() - HEADER.length;
+    if (extra > 0) sheet.getRange(1, HEADER.length + 1, 1, extra).clearContent();  // 예전 질문 머리글 지우기
   }
   return sheet;
 }
