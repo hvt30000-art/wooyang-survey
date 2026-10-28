@@ -116,6 +116,7 @@ body.cards-mode .pager:not([hidden]){display:flex;flex-direction:column;height:c
 .g-photos img{display:block;width:100%;height:auto;max-height:440px;object-fit:cover;background:var(--soft)}
 .g-photos figcaption{margin-top:5px;font-size:12px;line-height:1.45}
 .g-credit{margin:4px 0 0;font-size:11px;color:var(--muted)}
+.g-credit a{color:inherit;text-underline-offset:2px}
 .g-apps{display:grid;gap:8px;margin-top:4px}
 .g-apps .btn{display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--bg)}
 .g-alt{margin:0;font-size:12.5px;color:var(--muted)}
@@ -326,6 +327,10 @@ body.cards-mode .pager:not([hidden]){display:flex;flex-direction:column;height:c
      lead:'국립현대미술관 앱에서 배우 박보검이 들려주는 서도호전 오디오 가이드를 들을 수 있어요. 이어폰을 챙겨 오세요.',
      steps:['앱을 열고 미술관 선택에서 <b>서울</b>을 눌러요','홈 ‘진행 중인 전시’에서 <b>서도호</b> 포스터를 눌러요 (안 보이면 옆으로 넘기기)','<b>오디오 가이드</b>에서 작품별로 들어요']}
   ];
+  // 사진별 출처 블로그
+  var PHOTO_SRC = {};
+  ['seed-1','seed-2','seed-3','g3-1','g3-2','g3-4','g4-1','g4-2','g4-3','g4-4','g5-4','g5-5','studio-1','studio-2','studio-3','studio-4'].forEach(function(k){ PHOTO_SRC[k] = 'tjsdudrhadl'; });
+  ['seed-4','g3-3','g5-1','g5-2','g5-3','lobby-1','lobby-2','lobby-3'].forEach(function(k){ PHOTO_SRC[k] = 'hunimoya'; });
   // 브로슈어 층별 지도를 단순하게 옮긴 것. 지금 보는 공간을 검게 칠함
   function mapSVG(key){
     function rm(id, x, y, w, h, label){
@@ -563,7 +568,8 @@ body.cards-mode .pager:not([hidden]){display:flex;flex-direction:column;height:c
       h += '<div class="g-photos">' + g.photos.map(function(p){
         return '<figure><img src="img/' + p[0] + '.jpg" alt="' + plain(p[1]) + '" loading="lazy" decoding="async"><figcaption>' + brk(p[1]) + '</figcaption></figure>';
       }).join('') + '</div>';
-      h += '<p class="g-credit">사진: 네이버 블로그 관람 후기</p>';
+      var used = {}; g.photos.forEach(function(p){ used[PHOTO_SRC[p[0]]] = true; });
+      h += '<p class="g-credit">사진 출처: ' + Object.keys(used).map(function(k){ return '<a href="https://blog.naver.com/' + k + '" rel="noopener">네이버 블로그 ' + k + '</a>'; }).join(', ') + '</p>';
     }
     if (g.audio) {
       var main = isAndroid ? APP_ANDROID : APP_IOS;
