@@ -18,7 +18,7 @@
   --t1:#3E6FE0; --t2:#E2508A; --t3:#2EAD98; --t4:#E9B322; --t-end:#8E949B;
   --blend:multiply;
   --font:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
-  --bar-h:64px;
+  --bar-h:48px;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -91,7 +91,7 @@ body.cards-mode .pager:not([hidden]){display:flex;flex-direction:column;height:c
 .pager .carousel{flex:1 1 auto;min-height:0;margin-top:12px;align-items:stretch;overflow:hidden}
 .pager .carousel>.card{overflow-y:auto;overscroll-behavior:contain;border-top:0;padding-top:4px}
 .pager .card .ans{flex:1 0 76px;min-height:76px;resize:none}
-.pager .car-nav{flex:0 0 auto;margin:10px 0 24px}
+.pager .car-nav{flex:0 0 auto;margin:8px 0 14px}
 .pager .carousel.single{margin-bottom:12px}
 
 /* guide */
@@ -155,7 +155,7 @@ body.cards-mode .pager:not([hidden]){display:flex;flex-direction:column;height:c
 .carousel>.card{flex:0 0 88%;scroll-snap-align:start}
 .carousel.single>.card{flex-basis:100%}
 .car-nav{display:flex;align-items:center;gap:10px;margin-top:14px}
-.car-nav .btn{flex:1;min-width:0;padding-inline:12px}
+.car-nav .btn{flex:1;min-width:0;min-height:38px;padding:7px 12px;font-size:14px}
 .pos{flex:0 0 auto;min-width:3.6em;font-size:13px;color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
 
 /* consent step */
@@ -202,17 +202,16 @@ body.cards-mode .pager:not([hidden]){display:flex;flex-direction:column;height:c
 .cta .dock-in{padding-block:10px}
 .cta .btn{width:100%}
 .tabs .dock-in{height:var(--bar-h);display:grid;grid-template-columns:repeat(3,1fr)}
-.tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:14.5px;font-weight:500;color:var(--muted);background:none;border:none;cursor:pointer}
+.tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:13px;font-weight:500;color:var(--muted);background:none;border:none;cursor:pointer}
 .tab[aria-selected="true"]{color:var(--fg);font-weight:700}
 .tab[aria-selected="true"]::before{content:"";position:absolute;top:-1px;left:28%;right:28%;height:2px;background:var(--strong)}
-.badge{font-size:11px;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums}
 
 </style>
 
 </head>
 <body>
 <main class="wrap">
-  <p class="banner" id="storage-banner" hidden>지금 연 화면에서는 창을 닫으면 적은 답이 사라질 수 있어요. 다 적은 뒤 ‘내 답 보기’에서 복사해 두세요.</p>
+  <p class="banner" id="storage-banner" hidden>지금 연 화면에서는 창을 닫으면 적은 답이 사라질 수 있어요. 다 적은 뒤 ‘내 대답 보기’에서 복사해 두세요.</p>
 
   <!-- intro -->
   <section id="view-intro" class="view" aria-label="소개">
@@ -279,7 +278,7 @@ body.cards-mode .pager:not([hidden]){display:flex;flex-direction:column;height:c
   <div class="dock-in" role="tablist">
     <button type="button" class="tab" role="tab" id="tab-guide" data-view="guide" aria-controls="view-guide" aria-selected="false">전시 둘러보기</button>
     <button type="button" class="tab" role="tab" id="tab-cards" data-view="cards" aria-controls="view-cards" aria-selected="false">이야기 나누기</button>
-    <button type="button" class="tab" role="tab" id="tab-mine" data-view="mine" aria-controls="view-mine" aria-selected="false">내 답 보기<span class="badge" id="badge">0 / 6</span></button>
+    <button type="button" class="tab" role="tab" id="tab-mine" data-view="mine" aria-controls="view-mine" aria-selected="false">내 대답 보기</button>
   </div>
 </nav>
 
@@ -496,7 +495,7 @@ body.cards-mode .pager:not([hidden]){display:flex;flex-direction:column;height:c
     h += '<div class="c-titlerow"><h3 class="c-title" style="font-size:19px">적어 주셔서 고마워요</h3></div>';
     h += agreeBlock('send', '1. 내 답을 우양재단에 보낼까요?', '적은 답이 이름과 함께 재단에 저장돼요. 보낸 뒤에 고친 답도 자동으로 저장돼요.', state.sendOk);
     h += agreeBlock('use', '2. 답변 활용에 동의하시나요?', '재단 블로그나 결과보고에 답을 쓰게 된다면 <b>이름은 빼고</b> 써요. 누구의 답인지도 알 수 없도록 <b>여러 사람의 답을 섞어서</b> 다듬어 써요.', state.agree);
-    h += '<p class="c-text muted">어느 쪽을 골라도 불이익은 없어요. ‘내 답 보기’에서 바꿀 수 있어요.</p>';
+    h += '<p class="c-text muted">어느 쪽을 골라도 불이익은 없어요. ‘내 대답 보기’에서 바꿀 수 있어요.</p>';
     h += '<p class="c-msg" id="consent-msg" role="status"></p>';
     h += '</article>';
     return h;
@@ -653,7 +652,6 @@ body.cards-mode .pager:not([hidden]){display:flex;flex-direction:column;height:c
   }
   function updateCounts(){
     var n = answeredCount(), d = doneCount();
-    $('#badge').textContent = d + ' / ' + STEPS_TOTAL;
     $$('[data-count]').forEach(function(el){ el.textContent = d + ' / ' + STEPS_TOTAL + ' 완료'; });
     $('#start-btn').textContent = n ? '이어서 하기' : '전시 둘러보기 시작';
   }
